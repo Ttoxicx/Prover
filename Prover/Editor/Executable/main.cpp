@@ -30,8 +30,8 @@ int main()
 	mru->mesh->indices.push_back(1);
 	mru->mesh->indices.push_back(2);
 	mru->shader = new Shader(
-		"D:/Prover/Prover/Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.vert",
-		"D:/Prover/Prover/Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.frag"
+		"../../../../Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.vert",
+		"../../../../Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.frag"
 	);
 	mru->renderSet = RenderSetting(
 		RenderSetting::FaceCullMode::CullBack, 
@@ -56,8 +56,8 @@ int main()
 	mru2->mesh->indices.push_back(1);
 	mru2->mesh->indices.push_back(2);
 	mru2->shader = new Shader(
-		"D:/Prover/Prover/Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.vert",
-		"D:/Prover/Prover/Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.frag"
+		"../../../../Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.vert",
+		"../../../../Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.frag"
 	);
 	mru2->renderSet = RenderSetting(
 		RenderSetting::FaceCullMode::CullBack,
@@ -71,11 +71,9 @@ int main()
 
 	auto input = InputManager::getInstance();
 	auto fun = [mru2]() {
-		glUseProgram(mru2->shader->getShaderId());
 		mru2->shader->setParameters4f("color", glm::vec4(1.0f, 0.f, 0.f, 1.f));
 	};
 	auto fun1 = [mru]() {
-		glUseProgram(mru->shader->getShaderId());
 		mru->shader->setParameters4f("color", glm::vec4(0.0f, 1.f, 0.f, 1.f));
 	};
 	input->addKeyMapping(InputKey::W, KeyState::PRESS, fun);

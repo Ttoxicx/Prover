@@ -36,7 +36,7 @@ void Shader::loadandCompileSubShader(const char* path, SHADER_TYPE type)
 		shaderFileStream.close();
 	}
 	catch (std::ifstream::failure e) {
-		throw std::string(std::string(path)) + std::string(path).c_str();
+		throw std::string("WrongPath:: ") + std::string(path).c_str();
 	}
 	const char* sc = shaderCode.c_str();
 	unsigned int currentShaderId = 0;
@@ -124,6 +124,7 @@ void Shader::getShaderCondition() {
 
 void Shader::setParameters1b(const char* property, bool val)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform1i(loc, val);
@@ -131,10 +132,12 @@ void Shader::setParameters1b(const char* property, bool val)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters2b(const char* property, const glm::bvec2& vec2)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform2iv(loc, 1, glm::value_ptr(glm::ivec2(vec2)));
@@ -142,10 +145,12 @@ void Shader::setParameters2b(const char* property, const glm::bvec2& vec2)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters3b(const char* property, const glm::bvec3& vec3)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform3iv(loc, 1, glm::value_ptr(glm::ivec3(vec3)));
@@ -153,10 +158,12 @@ void Shader::setParameters3b(const char* property, const glm::bvec3& vec3)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters4b(const char* property, const glm::bvec4& vec4)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform4iv(loc, 1, glm::value_ptr(glm::ivec4(vec4)));
@@ -164,10 +171,12 @@ void Shader::setParameters4b(const char* property, const glm::bvec4& vec4)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters1i(const char* property, int val)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform1i(loc, val);
@@ -175,10 +184,12 @@ void Shader::setParameters1i(const char* property, int val)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters2i(const char* property, const glm::ivec2& vec2)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform2iv(loc, 1, glm::value_ptr(vec2));
@@ -186,10 +197,12 @@ void Shader::setParameters2i(const char* property, const glm::ivec2& vec2)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters3i(const char* property, const glm::ivec3& vec3)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform3iv(loc, 1, glm::value_ptr(vec3));
@@ -197,10 +210,12 @@ void Shader::setParameters3i(const char* property, const glm::ivec3& vec3)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters4i(const char* property, const glm::ivec4& vec4)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform4iv(loc, 1, glm::value_ptr(vec4));
@@ -208,10 +223,12 @@ void Shader::setParameters4i(const char* property, const glm::ivec4& vec4)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters1ui(const char* property, unsigned int val)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform1ui(loc, val);
@@ -219,10 +236,12 @@ void Shader::setParameters1ui(const char* property, unsigned int val)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters2ui(const char* property, const glm::uvec2& vec2)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform2uiv(loc, 1, glm::value_ptr(vec2));
@@ -230,10 +249,12 @@ void Shader::setParameters2ui(const char* property, const glm::uvec2& vec2)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters3ui(const char* property, const glm::uvec3& vec3)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform3uiv(loc, 1, glm::value_ptr(vec3));
@@ -241,10 +262,12 @@ void Shader::setParameters3ui(const char* property, const glm::uvec3& vec3)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters4ui(const char* property, const glm::uvec4& vec4)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform4uiv(loc, 1, glm::value_ptr(vec4));
@@ -252,10 +275,12 @@ void Shader::setParameters4ui(const char* property, const glm::uvec4& vec4)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters1f(const char* property, float val)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform1f(loc, val);
@@ -263,10 +288,12 @@ void Shader::setParameters1f(const char* property, float val)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters2f(const char* property, const glm::vec2& vec2)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform2fv(loc, 1, glm::value_ptr(vec2));
@@ -274,10 +301,12 @@ void Shader::setParameters2f(const char* property, const glm::vec2& vec2)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters3f(const char* property, const glm::vec3& vec3)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform3fv(loc, 1, glm::value_ptr(vec3));
@@ -285,10 +314,12 @@ void Shader::setParameters3f(const char* property, const glm::vec3& vec3)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters4f(const char* property, const glm::vec4& vec4)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform4fv(loc, 1, glm::value_ptr(vec4));
@@ -296,10 +327,12 @@ void Shader::setParameters4f(const char* property, const glm::vec4& vec4)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters1d(const char* property, double val)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform1d(loc, val);
@@ -307,10 +340,12 @@ void Shader::setParameters1d(const char* property, double val)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters2d(const char* property, const glm::dvec2& vec2)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform2dv(loc, 1, glm::value_ptr(vec2));
@@ -318,10 +353,12 @@ void Shader::setParameters2d(const char* property, const glm::dvec2& vec2)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters3d(const char* property, const glm::dvec3& vec3)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform3dv(loc, 1, glm::value_ptr(vec3));
@@ -329,10 +366,12 @@ void Shader::setParameters3d(const char* property, const glm::dvec3& vec3)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParameters4d(const char* property, const glm::dvec4& vec4)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniform4dv(loc, 1, glm::value_ptr(vec4));
@@ -340,10 +379,12 @@ void Shader::setParameters4d(const char* property, const glm::dvec4& vec4)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParametersMat2f(const char* property, const glm::mat2& mat2)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniformMatrix2fv(loc, 1, GL_FALSE, glm::value_ptr(mat2));
@@ -351,10 +392,12 @@ void Shader::setParametersMat2f(const char* property, const glm::mat2& mat2)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParametersMat3f(const char* property, const glm::mat3& mat3)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(mat3));
@@ -362,10 +405,12 @@ void Shader::setParametersMat3f(const char* property, const glm::mat3& mat3)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParametersMat4f(const char* property, const glm::mat4& mat4)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat4));
@@ -373,10 +418,12 @@ void Shader::setParametersMat4f(const char* property, const glm::mat4& mat4)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParametersMat2d(const char* property, const glm::dmat2& mat2)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniformMatrix2dv(loc, 1, GL_FALSE, glm::value_ptr(mat2));
@@ -384,10 +431,12 @@ void Shader::setParametersMat2d(const char* property, const glm::dmat2& mat2)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParametersMat3d(const char* property, const glm::dmat3& mat3)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniformMatrix3dv(loc, 1, GL_FALSE, glm::value_ptr(mat3));
@@ -395,10 +444,12 @@ void Shader::setParametersMat3d(const char* property, const glm::dmat3& mat3)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
 
 void Shader::setParametersMat4d(const char* property, const glm::dmat4& mat4)
 {
+	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
 	if (loc != -1) {
 		glUniformMatrix4dv(loc, 1, GL_FALSE, glm::value_ptr(mat4));
@@ -406,4 +457,5 @@ void Shader::setParametersMat4d(const char* property, const glm::dmat4& mat4)
 	else {
 		std::cout << "Shader: " << _shaderProgramId << " Property" << " \" " << property << " \" " << "Not Found!!!\n";
 	}
+	glUseProgram(0);
 }
