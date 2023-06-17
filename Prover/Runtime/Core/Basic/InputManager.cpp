@@ -143,10 +143,11 @@ std::map<InputKey, unsigned int> InputKeyGlfwMapping
 	std::pair<InputKey,unsigned int>(InputKey::MOUSE_BUTTON_RIGHT ,GLFW_MOUSE_BUTTON_RIGHT),
 	std::pair<InputKey,unsigned int>(InputKey::MOUSE_BUTTON_MIDDLE,GLFW_MOUSE_BUTTON_MIDDLE)
 };
-InputManager* InputManager::getInstance()
+
+std::shared_ptr<InputManager> InputManager::getInstance()
 {
 	if (_inputmanager == nullptr) {
-		_inputmanager = new InputManager();
+		_inputmanager = std::make_shared<InputManager>();
 	}
 	return _inputmanager;
 }
@@ -289,4 +290,4 @@ std::map<unsigned int, std::vector<std::function<void()>>> InputManager::_keyMap
 std::vector<std::function<void(double, double)>> InputManager::_mouseXYCallBack;
 std::vector<std::function<void(double, double)>> InputManager::_mouseSrollCallBack;
 
-InputManager* InputManager::_inputmanager = nullptr;
+std::shared_ptr<InputManager> InputManager::_inputmanager = nullptr;

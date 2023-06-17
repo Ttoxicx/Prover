@@ -1,19 +1,21 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 #include "Render/Renderer.h"
-#include "Render/DataClass/Mesh.h"
+#include "Geometry/Mesh.h"
 #include "Render/Shader/Shader.h"
 #include "View/Viewport.h"
 #include "Basic/InputManager.h"
+#include "Basic/Camera.h"
 #include <iostream>
 
 int main()
 {
 	auto viewport = Viewport::getInstance();
-	Renderer renderer;
-	viewport->setRenderer(&renderer);
-	MeshRenderUnit* mru = new MeshRenderUnit;
-	mru->mesh = new Mesh;
+	auto renderer = std::make_shared<Renderer>();
+	viewport->setRenderer(renderer);
+	std::shared_ptr<MeshRenderUnit> mru=std::make_unique<MeshRenderUnit>();
+	
+	mru->mesh = std::make_shared<Mesh>();
 	mru->mesh->vertices.push_back(glm::vec3(0.f, 1.f, 0.f));
 	mru->mesh->vertices.push_back(glm::vec3(-1.f, -1.f, 0.f));
 	mru->mesh->vertices.push_back(glm::vec3(1.f, -1.f, 0.f));
@@ -29,16 +31,16 @@ int main()
 	mru->mesh->indices.push_back(0);
 	mru->mesh->indices.push_back(1);
 	mru->mesh->indices.push_back(2);
-	mru->shader = new Shader(
+	mru->shader = std::make_shared<Shader>(
 		"../../../../Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.vert",
 		"../../../../Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.frag"
-	);
+		);
 	mru->renderSet = RenderSetting(
-		RenderSetting::FaceCullMode::CullBack, 
-		RenderSetting::WireFrameMode::On
+		RenderSetting::FaceCullMode::Off,
+		RenderSetting::WireFrameMode::Off
 	);
-	MeshRenderUnit* mru2 = new MeshRenderUnit;
-	mru2->mesh = new Mesh;
+	std::shared_ptr<MeshRenderUnit> mru2 = std::make_unique<MeshRenderUnit>();
+	mru2->mesh = std::make_shared<Mesh>();
 	glm::vec3 offset = glm::vec3(0.7f, 0.7f, 0.7f);
 	mru2->mesh->vertices.push_back(glm::vec3(0.f, 1.f, 0.f) * 0.2f + offset);
 	mru2->mesh->vertices.push_back(glm::vec3(-1.f, -1.f, 0.f) * 0.2f + offset);
@@ -55,30 +57,31 @@ int main()
 	mru2->mesh->indices.push_back(0);
 	mru2->mesh->indices.push_back(1);
 	mru2->mesh->indices.push_back(2);
-	mru2->shader = new Shader(
+	mru2->shader = std::make_shared<Shader>(
 		"../../../../Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.vert",
 		"../../../../Prover/Runtime/Core/Render/Shader/SL/GLSL/SingleColor.frag"
-	);
+		);
 	mru2->renderSet = RenderSetting(
-		RenderSetting::FaceCullMode::CullBack,
+		RenderSetting::FaceCullMode::Off,
 		RenderSetting::WireFrameMode::Off
 	);
 	if (!mru2->shader->isShaderBuildSuccessful()) {
 		mru2->shader->getShaderCondition();
 	}
-	renderer.addMeshRenderUnit(mru);
-	renderer.addMeshRenderUnit(mru2);
-
+	renderer->addMeshRenderUnit(mru);
+	renderer->addMeshRenderUnit(mru2);
+	//¿ØÖÆ²âÊÔ
 	auto input = InputManager::getInstance();
-	auto fun = [mru2]() {
+	auto fun = [&mru2]() {
 		mru2->shader->setParameters4f("color", glm::vec4(1.0f, 0.f, 0.f, 1.f));
 	};
-	auto fun1 = [mru]() {
+	auto fun1 = [&mru]() {
 		mru->shader->setParameters4f("color", glm::vec4(0.0f, 1.f, 0.f, 1.f));
 	};
-	input->addKeyMapping(InputKey::W, KeyState::PRESS, fun);
-	input->addKeyMapping(InputKey::S, KeyState::PRESS, fun1);
+	input->addKeyMapping(InputKey::I, KeyState::PRESS, fun);
+	input->addKeyMapping(InputKey::O, KeyState::PRESS, fun1);
 
 	viewport->exec();
+
 	return 0;
 }

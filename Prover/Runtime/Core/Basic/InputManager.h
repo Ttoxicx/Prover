@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include <glfw/glfw3.h>
+#include <memory>
 enum class KeyState
 {
 	RELEASE			   ,
@@ -160,9 +161,10 @@ enum class InputKey
 class InputManager {
 public:
 	InputManager() {}
-	~InputManager() {}
+	~InputManager() {
+	}
 public:
-	static InputManager* getInstance();
+	static std::shared_ptr<InputManager> getInstance();
 public:
 	void  addKeyMapping(InputKey key, KeyState state, std::function<void()> callback);
 	void  addMouseXYCallBack(std::function<void(double, double)> callback);
@@ -182,7 +184,7 @@ private:
 	static std::vector<std::function<void(double, double)>> _mouseXYCallBack;
 	static std::vector<std::function<void(double, double)>> _mouseSrollCallBack;
 private:
-	static InputManager* _inputmanager;
+	static std::shared_ptr<InputManager> _inputmanager;
 };
 
 #endif // !_INPUTMANAGER_H_

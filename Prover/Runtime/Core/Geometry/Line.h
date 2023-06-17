@@ -1,12 +1,14 @@
-#ifndef _POINT_H_
-#define _POINT_H_
+#ifndef _LINE_H_
+#define _LINE_H_
 
+#include "Geometry/Geometry.h"
 #include <vector>
 #include <glm/glm.hpp>
-class Point {
+
+class Line :public Geometry {
 public:
-	Point(){}
-	~Point(){}
+	Line() {}
+	~Line() {}
 public:
 	std::vector<glm::vec3> vertices;
 	std::vector<unsigned int> indices;

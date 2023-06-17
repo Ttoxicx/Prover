@@ -1,22 +1,23 @@
 #include "Render/Renderer.h"
-#include "Render/DataClass/Mesh.h"
-#include "Render/DataClass/Line.h"
-#include "Render/DataClass/Point.h"
+#include "Geometry/Mesh.h"
+#include "Geometry/Line.h"
+#include "Geometry/Point.h"
 #include "Render/Shader/Shader.h"
 #include "Basic/Camera.h"
 #include "glad/glad.h"
 
-GeometryRenderBuffer* Renderer::setUpMeshGeometryRenderBuffer(Mesh* mesh)
+std::shared_ptr<GeometryRenderBuffer> Renderer::setUpMeshGeometryRenderBuffer(Mesh* mesh)
 {
-	unsigned int* VAO = new unsigned int;
-	unsigned int* VBO = new unsigned int;
-	unsigned int* EBO = new unsigned int;
-	glGenVertexArrays(1, VAO);
-	glGenBuffers(1, VBO);
-	glGenBuffers(1, EBO);
-	glBindVertexArray(*VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
+	std::shared_ptr<GeometryRenderBuffer> buffer(new GeometryRenderBuffer);
+	buffer->VAO = std::make_shared<unsigned int>();
+	buffer->VBO = std::make_shared<unsigned int>();
+	buffer->EBO = std::make_shared<unsigned int>();
+	glGenVertexArrays(1, buffer->VAO.get());
+	glGenBuffers(1, buffer->VBO.get());
+	glGenBuffers(1, buffer->EBO.get());
+	glBindVertexArray(*buffer->VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, *buffer->VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *buffer->EBO);
 	unsigned int sizeofPoints = mesh->vertices.size() * sizeof(glm::vec3);
 	unsigned int sizeofNormals = mesh->normals.size() * sizeof(glm::vec3);
 	unsigned int sizeofTex = mesh->texCoords.size() * sizeof(glm::vec2);
@@ -42,23 +43,20 @@ GeometryRenderBuffer* Renderer::setUpMeshGeometryRenderBuffer(Mesh* mesh)
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
 	glBindVertexArray(0);
-	GeometryRenderBuffer* buffer = new GeometryRenderBuffer;
-	buffer->VAO = VAO;
-	buffer->VBO = VBO;
-	buffer->EBO = EBO;
 	return buffer;
 }
-GeometryRenderBuffer* Renderer::setUpLineGeometryRenderBuffer(Line* line)
+std::shared_ptr<GeometryRenderBuffer> Renderer::setUpLineGeometryRenderBuffer(Line* line)
 {
-	unsigned int* VAO = new unsigned int;
-	unsigned int* VBO = new unsigned int;
-	unsigned int* EBO = new unsigned int;
-	glGenVertexArrays(1, VAO);
-	glGenBuffers(1, VBO);
-	glGenBuffers(1, EBO);
-	glBindVertexArray(*VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
+	std::shared_ptr<GeometryRenderBuffer> buffer(new GeometryRenderBuffer);
+	buffer->VAO = std::make_shared<unsigned int>();
+	buffer->VBO = std::make_shared<unsigned int>();
+	buffer->EBO = std::make_shared<unsigned int>();
+	glGenVertexArrays(1, buffer->VAO.get());
+	glGenBuffers(1, buffer->VBO.get());
+	glGenBuffers(1, buffer->EBO.get());
+	glBindVertexArray(*buffer->VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, *buffer->VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *buffer->EBO);
 	unsigned int sizeofPoints = line->vertices.size() * sizeof(glm::vec3);
 	unsigned int sizeofIndices = line->indices.size() * sizeof(unsigned int);
 	unsigned int pointOffset = 0;
@@ -69,23 +67,20 @@ GeometryRenderBuffer* Renderer::setUpLineGeometryRenderBuffer(Line* line)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)pointOffset);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
-	GeometryRenderBuffer* buffer = new GeometryRenderBuffer;
-	buffer->VAO = VAO;
-	buffer->VBO = VBO;
-	buffer->EBO = EBO;
 	return buffer;
 }
-GeometryRenderBuffer* Renderer::setUpPointGeometryRenderBuffer(Point* point)
+std::shared_ptr<GeometryRenderBuffer> Renderer::setUpPointGeometryRenderBuffer(Point* point)
 {
-	unsigned int* VAO = new unsigned int;
-	unsigned int* VBO = new unsigned int;
-	unsigned int* EBO = new unsigned int;
-	glGenVertexArrays(1, VAO);
-	glGenBuffers(1, VBO);
-	glGenBuffers(1, EBO);
-	glBindVertexArray(*VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
+	std::shared_ptr<GeometryRenderBuffer> buffer(new GeometryRenderBuffer);
+	buffer->VAO = std::make_shared<unsigned int>();
+	buffer->VBO = std::make_shared<unsigned int>();
+	buffer->EBO = std::make_shared<unsigned int>();
+	glGenVertexArrays(1, buffer->VAO.get());
+	glGenBuffers(1, buffer->VBO.get());
+	glGenBuffers(1, buffer->EBO.get());
+	glBindVertexArray(*buffer->VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, *buffer->VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *buffer->EBO);
 	unsigned int sizeofPoints = point->vertices.size() * sizeof(glm::vec3);
 	for (int i = 0; i < point->vertices.size(); ++i) {
 		point->indices.push_back(i);
@@ -98,23 +93,16 @@ GeometryRenderBuffer* Renderer::setUpPointGeometryRenderBuffer(Point* point)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)pointOffset);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
-	GeometryRenderBuffer* buffer=new GeometryRenderBuffer;
-	buffer->VAO = VAO;
-	buffer->VBO = VBO;
-	buffer->EBO = EBO;
 	return buffer;
 }
 void Renderer::deleteGeometryRenderBuffer(GeometryRenderBuffer* buffer)
 {
-	glDeleteBuffers(1, buffer->VBO);
-	glDeleteBuffers(1, buffer->EBO);
-	glDeleteVertexArrays(1, buffer->VAO);
-	delete buffer->VBO;
-	delete buffer->EBO;
-	delete buffer->VAO;
+	glDeleteBuffers(1, buffer->VBO.get());
+	glDeleteBuffers(1, buffer->EBO.get());
+	glDeleteVertexArrays(1, buffer->VAO.get());
 }
 
-void Renderer::drawMesh(MeshRenderUnit* mru)
+void Renderer::drawMesh(std::shared_ptr<MeshRenderUnit> mru)
 {
 	auto rendersetting = mru->renderSet;
 	if (rendersetting.getFaceCullMode() == RenderSetting::FaceCullMode::CullFront) {
@@ -133,31 +121,31 @@ void Renderer::drawMesh(MeshRenderUnit* mru)
 	glUseProgram(mru->shader->getShaderId());
 	glBindVertexArray(*(buffer->VAO));
 	glDrawElements(GL_TRIANGLES, mru->mesh->indices.size(), GL_UNSIGNED_INT, (void*)0);
-	updateShaderCommonAttribute(mru->shader);
+	updateShaderCommonAttribute(mru->shader.get());
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Renderer::drawLine(LineRenderUnit* lru)
+void Renderer::drawLine(std::shared_ptr<LineRenderUnit> lru)
 {
 	auto buffer = _lineRenderMapping.at(lru);
 	glBindVertexArray(*(buffer->VAO));
 	glUseProgram(lru->shader->getShaderId());
-	updateShaderCommonAttribute(lru->shader);
+	updateShaderCommonAttribute(lru->shader.get());
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glDrawElements(GL_LINE, lru->line->indices.size(), GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
 }
 
-void Renderer::drawPoint(PointRenderUnit* pru)
+void Renderer::drawPoint(std::shared_ptr<PointRenderUnit> pru)
 {
 	auto buffer = _pointRenderMapping.at(pru);
 	glBindVertexArray(*(buffer->VAO));
 	glUseProgram(pru->shader->getShaderId());
-	updateShaderCommonAttribute(pru->shader);
+	updateShaderCommonAttribute(pru->shader.get());
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glDrawElements(GL_POINT, pru->point->indices.size(), GL_UNSIGNED_INT, (void*)0);
@@ -176,7 +164,7 @@ void Renderer::setViewMatrix(Shader* shader)
 void Renderer::setProjectionMatrix(Shader* shader)
 {
 	if (_mainCamera != nullptr) {
-		shader->setParametersMat4f("projectionMatrix", _mainCamera->getViewMatrix());
+		shader->setParametersMat4f("projectionMatrix", _mainCamera->getProjcetionMatrix());
 	}
 	else {
 		shader->setParametersMat4f("projectionMatrix", glm::mat4(1.0f));
@@ -203,37 +191,37 @@ void Renderer::prepairToRender()
 {
 	for (auto value : _meshRenderUnitsRemove) {
 		auto buffer = _meshRenderMapping.at(value);
-		deleteGeometryRenderBuffer(buffer);
+		deleteGeometryRenderBuffer(buffer.get());
 		_meshRenderMapping.erase(value);
 	}
 	for (auto value : _lineRenderUnitsRemove) {
 		auto buffer = _lineRenderMapping.at(value);
-		deleteGeometryRenderBuffer(buffer);
+		deleteGeometryRenderBuffer(buffer.get());
 		_lineRenderMapping.erase(value);
 	}
 	for (auto value : _pointRenderUnitsRemove) {
 		auto buffer = _pointRenderMapping.at(value);
-		deleteGeometryRenderBuffer(buffer);
+		deleteGeometryRenderBuffer(buffer.get());
 		_pointRenderMapping.erase(value);
 	}
 	for (auto value : _meshRenderUnitsAdd) {
 		auto val = _meshRenderMapping.find(value);
 		if (val == _meshRenderMapping.end()) {
-			auto buffer = setUpMeshGeometryRenderBuffer(value->mesh);
+			auto buffer = setUpMeshGeometryRenderBuffer(value->mesh.get());
 			_meshRenderMapping.emplace(value, buffer);
 		}
 	}
 	for (auto value : _lineRenderUnitsAdd) {
 		auto val = _lineRenderMapping.find(value);
 		if (val == _lineRenderMapping.end()) {
-			auto buffer = setUpLineGeometryRenderBuffer(value->line);
+			auto buffer = setUpLineGeometryRenderBuffer(value->line.get());
 			_lineRenderMapping.emplace(value, buffer);
 		}
 	}
 	for (auto value : _pointRenderUnitsAdd) {
 		auto val = _pointRenderMapping.find(value);
 		if (val == _pointRenderMapping.end()) {
-			auto buffer = setUpPointGeometryRenderBuffer(value->point);
+			auto buffer = setUpPointGeometryRenderBuffer(value->point.get());
 			_pointRenderMapping.emplace(value, buffer);
 		}
 	}
@@ -246,6 +234,9 @@ void Renderer::prepairToRender()
 }
 void Renderer::render()
 {
+	if (_mainCamera) {
+		_mainCamera->updateCameraInfo();
+	}
 	for (auto value : _meshRenderMapping) {
 		drawMesh(value.first);
 	}

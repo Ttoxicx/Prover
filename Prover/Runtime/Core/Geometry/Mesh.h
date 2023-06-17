@@ -1,13 +1,14 @@
 #ifndef _MESH_H_
 #define _MESH_H_
 
+#include "Geometry/Geometry.h"
 #include <vector>
 #include <glm/glm.hpp>
 
-class Mesh {
+class Mesh :public Geometry {
 public:
-	Mesh(){}
-	~Mesh(){}
+	Mesh() {}
+	~Mesh() {}
 public:
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;

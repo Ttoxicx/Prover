@@ -2,33 +2,44 @@
 #define _VIEWPORT_H_
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
+#include <memory>
 
 class Renderer;
+class Camera;
 
 class Viewport {
 public:
 	Viewport();
 	Viewport(int width, int height);
-	~Viewport();
+	~Viewport() {
+	}
 public:
-	static Viewport* getInstance();
+	static std::shared_ptr<Viewport> getInstance();
+	static float deltaTime;
 public:
 	void exec();
 public:
-	void setRenderer(Renderer* renderer);
+	void setRenderer(std::shared_ptr<Renderer> renderer);
 	void setViewPortSize(int width, int height);
 	inline int getViewPortHeight() { return _windowHeight; };
 	inline int getViewPortWidth() { return _windowWidth; };
 private:
 	void initViewPort();
 	void initInputManager();
+	void initDefaultConfig();
 private:
-	GLFWwindow* _window = nullptr;
+	GLFWwindow* _window;
 	int _windowWidth = 800;
 	int _windowHeight = 600;
 private:
-	Renderer* _renderer = nullptr;
+	std::shared_ptr<Renderer> _renderer;
+	std::shared_ptr<Camera> _defaultCamera;
 private:
-	static Viewport* _viewport;
+	float _mouseX = 0.f;
+	float _mouseY = 0.f;
+	bool _isFisrtMove = true;
+	float _startTime = 0.f;
+private:
+	static std::shared_ptr<Viewport> _viewport;
 };
 #endif // !_VIEWPORT_H_

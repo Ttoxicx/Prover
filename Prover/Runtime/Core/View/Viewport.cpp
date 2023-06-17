@@ -1,12 +1,14 @@
 #include "View/Viewport.h"
 #include "Render/Renderer.h"
 #include "Basic/InputManager.h"
+#include "Basic/Camera.h"
 #include <iostream>
 
 Viewport::Viewport()
 {
 	initViewPort();
 	initInputManager();
+	initDefaultConfig();
 }
 
 Viewport::Viewport(int width, int height)
@@ -15,20 +17,13 @@ Viewport::Viewport(int width, int height)
 	_windowHeight = height; 
 	initViewPort();
 	initInputManager();
+	initDefaultConfig();
 }
 
-Viewport::~Viewport()
-{
-	if (_viewport != nullptr) {
-		delete _viewport;
-		_viewport = nullptr;
-	}
-}
-
-Viewport* Viewport::getInstance()
+std::shared_ptr<Viewport> Viewport::getInstance()
 {
 	if (_viewport == nullptr) {
-		_viewport = new Viewport();
+		_viewport = std::make_shared<Viewport>();
 	}
 	return _viewport;
 }
@@ -40,10 +35,13 @@ void framebuffer_windowsize_callback(GLFWwindow* window, int width, int height)
 
 void Viewport::initViewPort()
 {
-	glfwInit();//初始化GLFW
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);//配置OpenGL版本
+	//初始化GLFW
+	glfwInit();
+	//配置OpenGL版本
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//配置为核心模式
+	//配置为核心模式
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	_window = glfwCreateWindow(_windowWidth, _windowHeight, "Prover", NULL, NULL);
 	if (_window == NULL) {
 		glfwTerminate();
@@ -61,9 +59,12 @@ void Viewport::initViewPort()
 	glfwSetFramebufferSizeCallback(_window, framebuffer_windowsize_callback);
 }
 
-void Viewport::setRenderer(Renderer* renderer)
+void Viewport::setRenderer(std::shared_ptr<Renderer> renderer)
 {
 	_renderer = renderer;
+	if (renderer->getMainCamera() == nullptr) {
+		renderer->setMainCamera(_defaultCamera);
+	}
 }
 
 void Viewport::setViewPortSize(int width, int height) {
@@ -74,13 +75,104 @@ void Viewport::setViewPortSize(int width, int height) {
 
 void Viewport::initInputManager()
 {
-	InputManager* inputManager = InputManager::getInstance();
-	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	glfwSetCursorPosCallback(_window, &InputManager::handleMouseSrollCallBack);
+	InputManager* inputManager = InputManager::getInstance().get();
+	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(_window, &InputManager::handleMouseXYCallBack);
 	glfwSetScrollCallback(_window, &InputManager::handleMouseSrollCallBack);
 }
 
+void Viewport::initDefaultConfig()
+{
+	_defaultCamera = std::make_shared<Camera>();
+	//添加默认相机控制
+	auto cameraXY = [=](double xpos, double ypos) {
+		if (_renderer->getMainCamera() != _defaultCamera) return;
+		float speed = _defaultCamera->getCameraRotateSpeed();
+		if (_isFisrtMove) {
+			_mouseX = xpos;
+			_mouseY = ypos;
+			_isFisrtMove = false;
+		}
+		float deltaPitch = -(ypos - _mouseY) * deltaTime * speed;
+		float deltaYaw = -(_mouseX - xpos) * deltaTime * speed;
+		_mouseX = xpos;
+		_mouseY = ypos;
+		glm::vec3 rotation = _defaultCamera->getCameraRotation();
+		float pitch = rotation.x;
+		float yaw = rotation.y;
+		rotation.x = glm::clamp<float>(pitch + deltaPitch, -89.f, 89.f);
+		rotation.y = yaw + deltaYaw;
+		_defaultCamera->setCameraRotation(rotation);
+	};
+	auto cameraFOV = [=](double xval, double yval) {
+		if (_renderer->getMainCamera() != _defaultCamera) return;
+		float speed = _defaultCamera->getCameraZoomSpeed();
+		float fov = _defaultCamera->getCameraFOV();
+		fov = glm::clamp(fov - float(yval * speed * deltaTime), 44.0f, 46.0f);
+		_defaultCamera->setCameraFOV(fov);
+	};
+	auto CameraMoveForward = [=]() {
+		if (_renderer->getMainCamera() != _defaultCamera) return;
+		float speed = _defaultCamera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
+		cameraloc += deltaTime * _defaultCamera->getCameraFrontVector() * speed;
+		_defaultCamera->setCameraLocation(cameraloc);
+	};
+	auto CameraMoveBack = [=]() {
+		if (_renderer->getMainCamera() != _defaultCamera) return;
+		float speed = _defaultCamera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
+		cameraloc -= deltaTime * _defaultCamera->getCameraFrontVector() * speed;
+		_defaultCamera->setCameraLocation(cameraloc);
+	};
+	auto CameraMoveRight = [=]() {
+		if (_renderer->getMainCamera() != _defaultCamera) return;
+		float speed = _defaultCamera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
+		cameraloc += deltaTime * _defaultCamera->getCameraRightVector() * speed;
+		_defaultCamera->setCameraLocation(cameraloc);
+	};
+	auto CameraMoveLeft = [=]() {
+		if (_renderer->getMainCamera() != _defaultCamera) return;
+		float speed = _defaultCamera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
+		cameraloc -= deltaTime * _defaultCamera->getCameraRightVector() * speed;
+		_defaultCamera->setCameraLocation(cameraloc);
+	};
+	auto CameraMoveDown = [=]() {
+		if (_renderer->getMainCamera() != _defaultCamera) return;
+		float speed = _defaultCamera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
+		cameraloc -= deltaTime * _defaultCamera->getCameraUpVector() * speed;
+		_defaultCamera->setCameraLocation(cameraloc);
+	};
+	auto CameraMoveUp = [=]() {
+		if (_renderer->getMainCamera() != _defaultCamera) return;
+		float speed = _defaultCamera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
+		cameraloc += deltaTime * _defaultCamera->getCameraUpVector() * speed;
+		_defaultCamera->setCameraLocation(cameraloc);
+	};
+	//按ESC退出
+	auto Exit = [=]() {
+		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+			glfwSetWindowShouldClose(_window, true);
+		}
+	};
+	auto input = InputManager::getInstance();
+	input->addMouseXYCallBack(cameraXY);
+	input->addMouseSrollCallBack(cameraFOV);
+	input->addKeyMapping(InputKey::W, KeyState::PRESS, CameraMoveForward);
+	input->addKeyMapping(InputKey::S, KeyState::PRESS, CameraMoveBack);
+	input->addKeyMapping(InputKey::D, KeyState::PRESS, CameraMoveRight);
+	input->addKeyMapping(InputKey::A, KeyState::PRESS, CameraMoveLeft);
+	input->addKeyMapping(InputKey::Q, KeyState::PRESS, CameraMoveDown);
+	input->addKeyMapping(InputKey::E, KeyState::PRESS, CameraMoveUp);
+	input->addKeyMapping(InputKey::ESCAPE, KeyState::PRESS, Exit);
+}
+
 void Viewport::exec() {
+	_startTime = glfwGetTime();
 	while (!glfwWindowShouldClose(_window)) {
 		glfwPollEvents();
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -91,8 +183,12 @@ void Viewport::exec() {
 			_renderer->render();
 		}
 		glfwSwapBuffers(_window);
+		float currentTime = glfwGetTime();
+		deltaTime = currentTime - _startTime;
+		_startTime = currentTime;
 	}
 	glfwTerminate();
 }
 
-Viewport* Viewport::_viewport = nullptr;
+std::shared_ptr<Viewport> Viewport::_viewport = nullptr;
+float Viewport::deltaTime = 0.f;

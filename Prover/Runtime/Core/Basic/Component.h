@@ -2,12 +2,14 @@
 #define _COMPONENT_H_
 #include "Basic/Object.h"
 #include <glm/glm.hpp>
+#include <memory>
+
 class Component {
 public:
 	virtual void tickComponent() {};
 public:
-	void attachToObject(Object* object) { _object = object; }
-	void distachFromObject(Object* object) { _object = nullptr; }
+	void attachToObject(std::shared_ptr<Object> object) { _object = object; }
+	void distachFromObject(std::shared_ptr<Object> object) { _object.reset(); }
 public:
 	inline void setRelativeLocation(const glm::vec3& relativelocation) { _relativeLocation = relativelocation; }
 	inline void setRelativeRotation(const glm::vec3& relativeRotation) { _relativeRotation = relativeRotation; }
@@ -20,7 +22,7 @@ public:
 public:
 	bool tickComponentEnabled = false;
 protected:
-	Object* _object = nullptr;
+	std::shared_ptr<Object> _object;
 	glm::vec3 _relativeLocation = glm::vec3(0.f);
 	glm::vec3 _relativeRotation = glm::vec3(0.f);
 	glm::vec3 _worldLocation = glm::vec3(0.f);

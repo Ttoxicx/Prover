@@ -11,8 +11,6 @@ enum class ProjectionMode
 
 class Camera {
 public:
-	//视口相关
-
 	inline void setCameraFOV(float fov) { _fov = fov; }
 	inline void setCameraAaspectRatio(float aspectRito) { _aspectRatio = aspectRito; }
 	inline void setCameraFarPlane(float farPlane) { _farPlane = farPlane; }
@@ -27,12 +25,11 @@ public:
 	inline int getCameraPixelMapHeight() { return _height; }
 	inline glm::vec3 getCameraFrontVector() { return _frontVector; }
 	inline glm::vec3 getCameraRightVector() { return _rightVector; }
+	inline glm::vec3 getCameraUpVector() { return _upVector; }
 	inline glm::mat4 getProjcetionMatrix() { return _projectionMatrix; }
 	inline glm::mat4 getViewMatrix() { return _viewMatrix; }
 	inline ProjectionMode getCameraProjectionMode() { return _projectionMode; }
 public:
-	//变换相关
-
 	inline void setCameraLocation(glm::vec3 location) { _location = location; }
 	/*
 	* 设置相机的欧拉角
@@ -41,15 +38,20 @@ public:
 	inline void setCameraRotation(glm::vec3 rotation) { _rotation = rotation; }
 	inline glm::vec3 getCameraLocation() { return _location; }
 	inline glm::vec3 getCameraRotation() { return _rotation; }
+	inline void setCameraOffsetSpeed(float speed) { _offsetSpeed = _offsetSpeedUnit * speed; }
+	inline void setCameraZoomSpeed(float speed) { _zoomSpeed = _zoomSpeedUnit * speed; }
+	inline void setCameraRotateSpeed(float speed) { _rotateSpeed = _rotateSpeedUnit * speed; }
+	inline float getCameraOffsetSpeed() { return _offsetSpeed; }
+	inline float getCameraZoomSpeed() { return _zoomSpeed; }
+	inline float getCameraRotateSpeed() { return _rotateSpeed; }
 public:
 	//相机更新
-
 	void updateCameraInfo();
 private:
-	glm::vec3 _location = glm::vec3(0.f);
-	glm::vec3 _rotation = glm::vec3(0.f, 180.f, 0.f);
+	glm::vec3 _location = glm::vec3(0.f,0.f,10.f);
+	glm::vec3 _rotation = glm::vec3(0.f, -90.f, 0.f);
 	float _farPlane = 100.f;
-	float _nearPlane = 1.f;
+	float _nearPlane = 0.1f;
 	float _aspectRatio = 600.f / 800.f;
 	float _fov = 45.f;
 	float _width = 800.f;
@@ -60,5 +62,12 @@ private:
 	glm::mat4 _projectionMatrix = glm::mat4(1.f);
 	glm::mat4 _viewMatrix = glm::mat4(1.f);
 	ProjectionMode _projectionMode = ProjectionMode::Perspective;
+private:
+	float _rotateSpeedUnit = 20;
+	float _zoomSpeedUnit = 40;
+	float _offsetSpeedUnit = 20;
+	float _rotateSpeed = _rotateSpeedUnit;
+	float _zoomSpeed = _zoomSpeedUnit;
+	float _offsetSpeed = _offsetSpeedUnit;
 };
 #endif // !_CAMERA_H_
