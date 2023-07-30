@@ -4,7 +4,26 @@
 #include "Geometry/Point.h"
 #include "Render/Shader/Shader.h"
 #include "Basic/Camera.h"
+#include "Basic/Light.h"
+#include "Render/UniformProperty.h"
 #include "glad/glad.h"
+#include <glm/gtc/type_ptr.hpp>
+
+Renderer::Renderer()
+{
+	_uniformProperties = std::make_shared<UniformProperties>();
+	_uniformProperties->setUp();
+}
+
+Renderer::~Renderer()
+{
+	_uniformProperties->clear();
+}
+
+Renderer::Renderer(const Renderer& renderer)
+{
+
+}
 
 std::shared_ptr<GeometryRenderBuffer> Renderer::setUpMeshGeometryRenderBuffer(Mesh* mesh)
 {
@@ -29,11 +48,21 @@ std::shared_ptr<GeometryRenderBuffer> Renderer::setUpMeshGeometryRenderBuffer(Me
 	unsigned int tangentOffset = sizeofPoints + sizeofNormals + sizeofTangents;
 	glBufferData(GL_ARRAY_BUFFER, sizeofPoints + sizeofNormals + sizeofTex + sizeofTangents, NULL, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeofIndices, NULL, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, pointOffset, sizeofPoints, &(mesh->vertices[0]));
-	glBufferSubData(GL_ARRAY_BUFFER, normalOffset, sizeofNormals, &(mesh->normals[0]));
-	glBufferSubData(GL_ARRAY_BUFFER, texOffset, sizeofTex, &(mesh->texCoords[0]));
-	glBufferSubData(GL_ARRAY_BUFFER, tangentOffset, sizeofTangents, &(mesh->tangents[0]));
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeofIndices, &(mesh->indices[0]));
+	if (!mesh->vertices.empty()) {
+		glBufferSubData(GL_ARRAY_BUFFER, pointOffset, sizeofPoints, &(mesh->vertices[0]));
+	}
+	if (!mesh->normals.empty()) {
+		glBufferSubData(GL_ARRAY_BUFFER, normalOffset, sizeofNormals, &(mesh->normals[0]));
+	}
+	if (!mesh->texCoords.empty()) {
+		glBufferSubData(GL_ARRAY_BUFFER, texOffset, sizeofTex, &(mesh->texCoords[0]));
+	}
+	if (!mesh->tangents.empty()) {
+		glBufferSubData(GL_ARRAY_BUFFER, tangentOffset, sizeofTangents, &(mesh->tangents[0]));
+	}
+	if (!mesh->indices.empty()) {
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeofIndices, &(mesh->indices[0]));
+	}
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)pointOffset);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)normalOffset);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)texOffset);
@@ -62,8 +91,12 @@ std::shared_ptr<GeometryRenderBuffer> Renderer::setUpLineGeometryRenderBuffer(Li
 	unsigned int pointOffset = 0;
 	glBufferData(GL_ARRAY_BUFFER, sizeofPoints, NULL, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeofIndices, NULL, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, pointOffset, sizeofPoints, &(line->vertices[0]));
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeofIndices, &(line->indices[0]));
+	if (!line->vertices.empty()) {
+		glBufferSubData(GL_ARRAY_BUFFER, pointOffset, sizeofPoints, &(line->vertices[0]));
+	}
+	if (!line->indices.empty()) {
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeofIndices, &(line->indices[0]));
+	}
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)pointOffset);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
@@ -88,8 +121,12 @@ std::shared_ptr<GeometryRenderBuffer> Renderer::setUpPointGeometryRenderBuffer(P
 	unsigned int pointOffset = 0;
 	glBufferData(GL_ARRAY_BUFFER, sizeofPoints, NULL, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, point->indices.size() * sizeof(unsigned int), NULL, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, pointOffset, sizeofPoints, &(point->vertices[0]));
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeofPoints, &(point->indices[0]));
+	if (!point->vertices.empty()) {
+		glBufferSubData(GL_ARRAY_BUFFER, pointOffset, sizeofPoints, &(point->vertices[0]));
+	}
+	if (!point->indices.empty()) {
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeofPoints, &(point->indices[0]));
+	}
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)pointOffset);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
@@ -121,7 +158,7 @@ void Renderer::drawMesh(std::shared_ptr<MeshRenderUnit> mru)
 	glUseProgram(mru->shader->getShaderId());
 	glBindVertexArray(*(buffer->VAO));
 	glDrawElements(GL_TRIANGLES, mru->mesh->indices.size(), GL_UNSIGNED_INT, (void*)0);
-	updateShaderCommonAttribute(mru->shader.get());
+	updateShaderCommonAttribute();
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glEnable(GL_CULL_FACE);
@@ -133,7 +170,7 @@ void Renderer::drawLine(std::shared_ptr<LineRenderUnit> lru)
 	auto buffer = _lineRenderMapping.at(lru);
 	glBindVertexArray(*(buffer->VAO));
 	glUseProgram(lru->shader->getShaderId());
-	updateShaderCommonAttribute(lru->shader.get());
+	updateShaderCommonAttribute();
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glDrawElements(GL_LINE, lru->line->indices.size(), GL_UNSIGNED_INT, (void*)0);
@@ -145,46 +182,46 @@ void Renderer::drawPoint(std::shared_ptr<PointRenderUnit> pru)
 	auto buffer = _pointRenderMapping.at(pru);
 	glBindVertexArray(*(buffer->VAO));
 	glUseProgram(pru->shader->getShaderId());
-	updateShaderCommonAttribute(pru->shader.get());
+	updateShaderCommonAttribute();
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glDrawElements(GL_POINT, pru->point->indices.size(), GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
 }
 
-void Renderer::setViewMatrix(Shader* shader)
+void Renderer::setViewMatrix()
 {
 	if (_mainCamera != nullptr) {
-		shader->setParametersMat4f("viewMatrix", _mainCamera->getViewMatrix());
+		_uniformProperties->setViewMatrix(_mainCamera->getViewMatrix());
 	}
 	else {
-		shader->setParametersMat4f("viewMatrix", glm::mat4(1.0f));
+		_uniformProperties->setViewMatrix(glm::mat4(1));
 	}
 }
-void Renderer::setProjectionMatrix(Shader* shader)
+void Renderer::setProjectionMatrix()
 {
 	if (_mainCamera != nullptr) {
-		shader->setParametersMat4f("projectionMatrix", _mainCamera->getProjcetionMatrix());
+		_uniformProperties->setProjectionMatrix(_mainCamera->getProjcetionMatrix());
 	}
 	else {
-		shader->setParametersMat4f("projectionMatrix", glm::mat4(1.0f));
-	}
-}
-
-void Renderer::setCameraPosition(Shader* shader) {
-	if (_mainCamera != nullptr) {
-		shader->setParameters3f("cameraPosition", _mainCamera->getCameraLocation());
-	}
-	else {
-		shader->setParameters3f("cameraPosition", glm::vec3(0.f));
+		_uniformProperties->setProjectionMatrix(glm::mat4(1));
 	}
 }
 
-void Renderer::updateShaderCommonAttribute(Shader* shader)
+void Renderer::setCameraPosition() {
+	if (_mainCamera != nullptr) {
+		_uniformProperties->setCameraPosition(_mainCamera->getCameraLocation());
+	}
+	else {
+		_uniformProperties->setCameraPosition(glm::vec3(0.f));
+	}
+}
+
+void Renderer::updateShaderCommonAttribute()
 {
-	setProjectionMatrix(shader);
-	setViewMatrix(shader);
-	setCameraPosition(shader);
+	setProjectionMatrix();
+	setViewMatrix();
+	setCameraPosition();
 }
 
 void Renderer::prepairToRender()
@@ -232,11 +269,43 @@ void Renderer::prepairToRender()
 	_lineRenderUnitsAdd.clear();
 	_pointRenderUnitsAdd.clear();
 }
+
+void Renderer::addDirectionalLight(std::shared_ptr<DirectionalLight> light)
+{
+	_uniformProperties->addDirectionalLight(light);
+}
+
+void Renderer::addPointLight(std::shared_ptr<PointLight> light)
+{
+	_uniformProperties->addPointLight(light);
+}
+
+void Renderer::addSpotLight(std::shared_ptr<SpotLight> light)
+{
+	_uniformProperties->addSpotLight(light);
+}
+
+void Renderer::removeDirectionalLight(std::shared_ptr<DirectionalLight> light)
+{
+	_uniformProperties->removeDirectionalLight(light);
+}
+
+void Renderer::removePointLight(std::shared_ptr<PointLight> light)
+{
+	_uniformProperties->removePointLight(light);
+}
+
+void Renderer::removeSpotLight(std::shared_ptr<SpotLight> light)
+{
+	_uniformProperties->removeSpotLight(light);
+}
+
 void Renderer::render()
 {
 	if (_mainCamera) {
 		_mainCamera->updateCameraInfo();
 	}
+	
 	for (auto value : _meshRenderMapping) {
 		drawMesh(value.first);
 	}

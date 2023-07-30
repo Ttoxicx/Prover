@@ -52,7 +52,7 @@ private:
 	glm::vec3 _rotation = glm::vec3(0.f, -90.f, 0.f);
 	float _farPlane = 100.f;
 	float _nearPlane = 0.1f;
-	float _aspectRatio = 600.f / 800.f;
+	float _aspectRatio = 800.f / 600.f;
 	float _fov = 45.f;
 	float _width = 800.f;
 	float _height = 600.f;

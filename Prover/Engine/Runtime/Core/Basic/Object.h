@@ -11,6 +11,7 @@ public:
 	virtual void tick(float deltatime) {};
 public:
 	bool tickEnabled = true;
+	bool moveable = false;
 private:
 	glm::vec3 _location = glm::vec3(0.f);
 	glm::vec3 _rotation = glm::vec3(0.f);

@@ -1,5 +1,6 @@
 #ifndef _RENDERER_H_
 #define _RENDERER_H_
+
 #include <set>
 #include <vector>
 #include <unordered_map>
@@ -11,6 +12,10 @@ class Line;
 class Point;
 class Shader;
 class Camera;
+class UniformProperties;
+class DirectionalLight;
+class PointLight;
+class SpotLight;
 
 //渲染设置
 class RenderSetting {
@@ -68,13 +73,12 @@ struct GeometryRenderBuffer {
 	std::shared_ptr<unsigned int> EBO;
 };
 
-
 //渲染器
 class Renderer {
 public:
-	Renderer() {}
-	~Renderer() {}
-	Renderer(const Renderer& renderer) {}
+	Renderer();
+	~Renderer();
+	Renderer(const Renderer& renderer);
 public:
 	inline void setMainCamera(std::shared_ptr<Camera> camera) { _mainCamera = camera; };
 	inline std::shared_ptr<Camera> getMainCamera() { return _mainCamera; }
@@ -86,15 +90,6 @@ public:
 	inline void removeMeshRenderUnit(std::shared_ptr<MeshRenderUnit> mru) { _meshRenderUnitsRemove.push_back(mru); }
 	inline void removeLineRenderUnit(std::shared_ptr<LineRenderUnit> lru) { _lineRenderUnitsRemove.push_back(lru); }
 	inline void removePointRenderUnit(std::shared_ptr<PointRenderUnit> pru) { _pointRenderUnitsRemove.push_back(pru); }
-private:
-	//渲染数据处理
-	std::shared_ptr<GeometryRenderBuffer> setUpMeshGeometryRenderBuffer(Mesh* mesh);
-	std::shared_ptr<GeometryRenderBuffer> setUpLineGeometryRenderBuffer(Line* line);
-	std::shared_ptr<GeometryRenderBuffer> setUpPointGeometryRenderBuffer(Point* point);
-	void deleteGeometryRenderBuffer(GeometryRenderBuffer* buffer);
-	void drawMesh(std::shared_ptr<MeshRenderUnit> mru);
-	void drawLine(std::shared_ptr<LineRenderUnit> lru);
-	void drawPoint(std::shared_ptr<PointRenderUnit> pru);
 public:
 	//整体渲染相关
 	void prepairToRender();
@@ -104,12 +99,29 @@ public:
 public:
 	//帧缓冲相关
 	//getFrameBuffer(camera,view,mode,buffertype)
+public:
+	//光照相关
+	void addDirectionalLight(std::shared_ptr<DirectionalLight> light);
+	void addPointLight(std::shared_ptr<PointLight> light);
+	void addSpotLight(std::shared_ptr<SpotLight> light);
+	void removeDirectionalLight(std::shared_ptr<DirectionalLight> light);
+	void removePointLight(std::shared_ptr<PointLight> light);
+	void removeSpotLight(std::shared_ptr<SpotLight> light);
+private:
+	//渲染数据处理
+	std::shared_ptr<GeometryRenderBuffer> setUpMeshGeometryRenderBuffer(Mesh* mesh);
+	std::shared_ptr<GeometryRenderBuffer> setUpLineGeometryRenderBuffer(Line* line);
+	std::shared_ptr<GeometryRenderBuffer> setUpPointGeometryRenderBuffer(Point* point);
+	void deleteGeometryRenderBuffer(GeometryRenderBuffer* buffer);
+	void drawMesh(std::shared_ptr<MeshRenderUnit> mru);
+	void drawLine(std::shared_ptr<LineRenderUnit> lru);
+	void drawPoint(std::shared_ptr<PointRenderUnit> pru);
 private:
 	//shader通用属性设置
-	void setViewMatrix(Shader* shader);
-	void setProjectionMatrix(Shader* shader);
-	void setCameraPosition(Shader* shader);
-	void updateShaderCommonAttribute(Shader* shader);
+	void setViewMatrix();
+	void setProjectionMatrix();
+	void setCameraPosition();
+	void updateShaderCommonAttribute();
 private:
 	//即将添加的渲染单元
 	std::vector<std::shared_ptr<MeshRenderUnit>> _meshRenderUnitsAdd;
@@ -130,6 +142,7 @@ private:
 private:
 	//渲染视口相关
 	std::shared_ptr<Camera> _mainCamera;
+	std::shared_ptr<UniformProperties> _uniformProperties;
 };
 
 #endif // !1

@@ -20,11 +20,11 @@ public:
 	void exec();
 public:
 	void setRenderer(std::shared_ptr<Renderer> renderer);
-	void setViewPortSize(int width, int height);
-	inline int getViewPortHeight() { return _windowHeight; };
-	inline int getViewPortWidth() { return _windowWidth; };
+	void setViewportSize(int width, int height);
+	inline int getViewportHeight() { return _windowHeight; };
+	inline int getViewportWidth() { return _windowWidth; };
 private:
-	void initViewPort();
+	void initViewport();
 	void initInputManager();
 	void initDefaultConfig();
 private:

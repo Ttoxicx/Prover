@@ -6,7 +6,7 @@
 
 Viewport::Viewport()
 {
-	initViewPort();
+	initViewport();
 	initInputManager();
 	initDefaultConfig();
 }
@@ -15,7 +15,7 @@ Viewport::Viewport(int width, int height)
 { 
 	_windowWidth = width; 
 	_windowHeight = height; 
-	initViewPort();
+	initViewport();
 	initInputManager();
 	initDefaultConfig();
 }
@@ -33,7 +33,7 @@ void framebuffer_windowsize_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void Viewport::initViewPort()
+void Viewport::initViewport()
 {
 	//≥ı ºªØGLFW
 	glfwInit();
@@ -67,15 +67,19 @@ void Viewport::setRenderer(std::shared_ptr<Renderer> renderer)
 	}
 }
 
-void Viewport::setViewPortSize(int width, int height) {
+void Viewport::setViewportSize(int width, int height) {
 	_windowHeight = height;
 	_windowWidth = width;
 	glViewport(0, 0, _windowWidth, _windowHeight);
+	auto camera = _renderer->getMainCamera();
+	if (camera) {
+		camera->setCameraAaspectRatio(float(width) / float(height));
+	}
 }
 
 void Viewport::initInputManager()
 {
-	InputManager* inputManager = InputManager::getInstance().get();
+	InputManager::getInstance();
 	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(_window, &InputManager::handleMouseXYCallBack);
 	glfwSetScrollCallback(_window, &InputManager::handleMouseSrollCallBack);
