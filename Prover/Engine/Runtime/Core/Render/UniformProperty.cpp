@@ -137,18 +137,27 @@ void UniformProperties::setCameraPosition(const glm::vec3& cameraPos)
 
 void UniformProperties::addDirectionalLight(std::shared_ptr<DirectionalLight> light)
 {
+	if (_directionalLights.size() >= MAXDIRECTIONALLIGHTCOUNT) {
+		return;
+	}
 	_directionalLights.push_back(light);
 	updateDirectionaLightBufferData();
 }
 
 void UniformProperties::addPointLight(std::shared_ptr<PointLight> light)
 {
+	if (_pointLights.size() >= MAXPOINTLIGHTCOUNT) {
+		return;
+	}
 	_pointLights.push_back(light);
 	updatePointLightBufferData();
 }
 
 void UniformProperties::addSpotLight(std::shared_ptr<SpotLight> light)
 {
+	if (_pointLights.size() >= MAXSPOTLIGHTCOUNT) {
+		return;
+	}
 	_spotLights.push_back(light);
 	updateSpotLightBufferData();
 }

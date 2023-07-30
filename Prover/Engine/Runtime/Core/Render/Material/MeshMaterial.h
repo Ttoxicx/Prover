@@ -60,7 +60,7 @@ public:
 		_modelMatrix = modelMatrix;
 		shader->setParametersMat4f("modelMatrix", modelMatrix);
 	}
-	void setModelMatrix(glm::mat3 normalMatrix) {
+	void setNormalMatrix(glm::mat3 normalMatrix) {
 		_normalMatrix = normalMatrix;
 		shader->setParametersMat3f("normalMatrix", normalMatrix);
 	}
