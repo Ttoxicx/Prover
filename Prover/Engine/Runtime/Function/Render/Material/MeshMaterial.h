@@ -9,8 +9,8 @@ class MeshMaterial :public MaterialBase {
 public:
 	MeshMaterial() {
 		shader = std::make_shared<Shader>(
-			"../../../../Prover/Engine/Runtime/Core/Render/Shader/SL/GLSL/IlluminationModel/BlinnPhong.vert",
-			"../../../../Prover/Engine/Runtime/Core/Render/Shader/SL/GLSL/IlluminationModel/BlinnPhong.frag"
+			"../../../../Prover/Engine/Runtime/Function/Render/Shader/SL/GLSL/IlluminationModel/BlinnPhong.vert",
+			"../../../../Prover/Engine/Runtime/Function/Render/Shader/SL/GLSL/IlluminationModel/BlinnPhong.frag"
 			);
 		shader->setParameters3f("ambientColor", _ambientColor);
 		shader->setParameters3f("diffuseColor", _diffuseColor);

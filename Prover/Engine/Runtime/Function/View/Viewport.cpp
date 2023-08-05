@@ -1,6 +1,6 @@
 #include "View/Viewport.h"
 #include "Render/Renderer.h"
-#include "Basic/InputManager.h"
+#include "Input/InputManager.h"
 #include "Basic/Camera.h"
 #include <iostream>
 

@@ -1,6 +1,6 @@
 #ifndef _INPUTCOMPONENT_H_
 #define _INPUTCOMPONENT_H_
-#include "Basic/Component.h"
+#include "Framework/Component/Component.h"
 class InputComponent :public Component {
 public:
 	void addKeyInput() {};

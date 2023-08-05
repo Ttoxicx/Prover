@@ -1,4 +1,4 @@
-#include "Basic/InputManager.h"
+#include "Input/InputManager.h"
 
 std::map<InputKey, unsigned int> InputKeyGlfwMapping
 {

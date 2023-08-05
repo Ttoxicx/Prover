@@ -1,6 +1,6 @@
 #ifndef _COMPONENT_H_
 #define _COMPONENT_H_
-#include "Basic/Object.h"
+#include "Framework/Object/Object.h"
 #include <glm/glm.hpp>
 #include <memory>
 

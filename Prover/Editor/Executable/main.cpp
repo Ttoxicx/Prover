@@ -4,7 +4,7 @@
 #include "Basic/Geometry/Mesh.h"
 #include "Render/Shader/Shader.h"
 #include "View/Viewport.h"
-#include "Basic/InputManager.h"
+#include "Input/InputManager.h"
 #include "Basic/Camera.h"
 #include "Render/Material/MeshMaterial.h"
 #include "Basic/Light.h"
