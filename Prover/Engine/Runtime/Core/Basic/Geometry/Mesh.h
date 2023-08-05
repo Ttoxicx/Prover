@@ -1,7 +1,7 @@
 #ifndef _MESH_H_
 #define _MESH_H_
 
-#include "Geometry/Geometry.h"
+#include "Basic/Geometry/Geometry.h"
 #include <vector>
 #include <glm/glm.hpp>
 
