@@ -1,7 +1,7 @@
 #ifndef _CAMERACOMPONENT_H_
 #define _CAMERACOMPONENT_H_
 #include "Framework/Component/Component.h"
-#include "Basic/Camera.h"
+#include "Render/Camera/Camera.h"
 #include <glm/glm.hpp>
 class CameraComponent :public Component {
 public:

@@ -1,7 +1,7 @@
 #include "View/Viewport.h"
 #include "Render/Renderer.h"
 #include "Input/InputManager.h"
-#include "Basic/Camera.h"
+#include "Render/Camera/Camera.h"
 #include <iostream>
 
 Viewport::Viewport()

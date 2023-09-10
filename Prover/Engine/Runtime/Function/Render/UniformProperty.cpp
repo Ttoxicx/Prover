@@ -1,5 +1,5 @@
 #include "Render/UniformProperty.h"
-#include "Basic/Light.h"
+#include "Render/Light/Light.h"
 #include "glad/glad.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>

@@ -1,7 +1,7 @@
 #ifndef _LINE_H_
 #define _LINE_H_
 
-#include "Basic/Geometry/Geometry.h"
+#include "Render/Geometry/Geometry.h"
 #include <vector>
 #include <glm/glm.hpp>
 

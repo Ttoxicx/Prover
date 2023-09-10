@@ -1,4 +1,4 @@
-#include "Basic/Camera.h"
+#include "Render/Camera/Camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 void Camera::updateCameraInfo()
