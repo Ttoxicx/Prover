@@ -4,22 +4,22 @@
 #include <glfw/glfw3.h>
 #include <memory>
 
-class Renderer;
+class GLRenderer;
 class Camera;
 
-class Viewport {
+class GLViewport {
 public:
-	Viewport();
-	Viewport(int width, int height);
-	~Viewport() {
+	GLViewport();
+	GLViewport(int width, int height);
+	~GLViewport() {
 	}
 public:
-	static std::shared_ptr<Viewport> getInstance();
+	static std::shared_ptr<GLViewport> getInstance();
 	static float deltaTime;
 public:
 	void exec();
 public:
-	void setRenderer(std::shared_ptr<Renderer> renderer);
+	void setRenderer(std::shared_ptr<GLRenderer> renderer);
 	void setViewportSize(int width, int height);
 	inline int getViewportHeight() { return _windowHeight; };
 	inline int getViewportWidth() { return _windowWidth; };
@@ -32,7 +32,7 @@ private:
 	int _windowWidth = 800;
 	int _windowHeight = 600;
 private:
-	std::shared_ptr<Renderer> _renderer;
+	std::shared_ptr<GLRenderer> _renderer;
 	std::shared_ptr<Camera> _defaultCamera;
 private:
 	float _mouseX = 0.f;
@@ -40,6 +40,6 @@ private:
 	bool _isFisrtMove = true;
 	float _startTime = 0.f;
 private:
-	static std::shared_ptr<Viewport> _viewport;
+	static std::shared_ptr<GLViewport> _viewport;
 };
 #endif // !_VIEWPORT_H_

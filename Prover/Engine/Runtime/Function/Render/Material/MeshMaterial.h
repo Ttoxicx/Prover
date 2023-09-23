@@ -1,14 +1,14 @@
 #ifndef _MESH_MATERIAL_H_
 #define _MESH_MATERIAL_H_
 
-#include "Render/Material/MaterialBase.h"
+#include "Render/Interface/OpenGL/MaterialBase.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class MeshMaterial :public MaterialBase {
+class MeshMaterial :public GLMaterialBase {
 public:
 	MeshMaterial() {
-		shader = std::make_shared<Shader>(
+		shader = std::make_shared<GLShader>(
 			"GLSL/IlluminationModel/BlinnPhong.vert",
 			"GLSL/IlluminationModel/BlinnPhong.frag"
 			);
@@ -64,7 +64,7 @@ public:
 		_normalMatrix = normalMatrix;
 		shader->setParametersMat3f("normalMatrix", normalMatrix);
 	}
-	std::shared_ptr<Shader> getShader() {
+	std::shared_ptr<GLShader> getShader() {
 		return shader;
 	}
 private:

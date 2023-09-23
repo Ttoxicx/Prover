@@ -1,9 +1,10 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
-#include "Render/Renderer.h"
+#include "Render/Interface/OpenGL/Renderer.h"
 #include "Render/Geometry/Mesh.h"
-#include "Render/Shader/Shader.h"
-#include "View/Viewport.h"
+#include "Render/Interface/OpenGL/Shader.h"
+#include "Render/Interface/OpenGL/Viewport.h"
+#include "Window/Window.h"
 #include "Input/InputManager.h"
 #include "Render/Camera/Camera.h"
 #include "Render/Material/MeshMaterial.h"
@@ -12,9 +13,9 @@
 
 #include "Math/Math.h"
 
-void loadTest(std::shared_ptr<Renderer> renderer) {
+void loadTest(std::shared_ptr<GLRenderer> renderer) {
 	//‰÷»æ≤‚ ‘
-	std::shared_ptr<MeshRenderUnit> mru = std::make_shared<MeshRenderUnit>();
+	std::shared_ptr<GLMeshRenderUnit> mru = std::make_shared<GLMeshRenderUnit>();
 
 	std::vector<glm::vec3> pointInfo = {
 		glm::vec3(-0.5f,0.5f,-0.5f),
@@ -75,9 +76,9 @@ void loadTest(std::shared_ptr<Renderer> renderer) {
 	mat->setMaxSpecular(glm::vec3(1.f, 1.f, 1.f));
 
 	mru->shader = mat->getShader();
-	mru->renderSet = RenderSetting(
-		RenderSetting::FaceCullMode::CullBack,
-		RenderSetting::WireFrameMode::Off
+	mru->renderSet = GLRenderSetting(
+		GLRenderSetting::FaceCullMode::CullBack,
+		GLRenderSetting::WireFrameMode::Off
 	);
 	renderer->addMeshRenderUnit(mru);
 }
@@ -121,8 +122,8 @@ int main()
 	}
 	
 
-	auto viewport = Viewport::getInstance();
-	auto renderer = std::make_shared<Renderer>();
+	auto viewport = GLViewport::getInstance();
+	auto renderer = std::make_shared<GLRenderer>();
 	/*std::shared_ptr<DirectionalLight> light = std::make_shared<DirectionalLight>();
 	light->lightColor = glm::vec4(1.f, 1.f, 1.f, 1.f);
 	light->lightDir = glm::normalize(glm::vec4(0.f, 0.f, -1.f, 0.f));

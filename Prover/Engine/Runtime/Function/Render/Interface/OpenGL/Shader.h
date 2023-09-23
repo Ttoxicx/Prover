@@ -3,11 +3,11 @@
 
 #include <glm/glm.hpp>
 
-class Shader {
+class GLShader {
 public:
-	Shader(const char* vscPath, const char* fscPath, const char* gscPath);
-	Shader(const char* vscPath, const char* fscPath);
-	Shader(const char* vscPath);
+	GLShader(const char* vscPath, const char* fscPath, const char* gscPath);
+	GLShader(const char* vscPath, const char* fscPath);
+	GLShader(const char* vscPath);
 public:
 	inline int isShaderBuildSuccessful() { return _buildSuccess; }
 	inline unsigned int getShaderId() { return _shaderProgramId; }

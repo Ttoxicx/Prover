@@ -1,33 +1,33 @@
-#include "Render/Renderer.h"
+#include "Render/Interface/OpenGL/Renderer.h"
 #include "Render/Geometry/Mesh.h"
 #include "Render/Geometry/Line.h"
 #include "Render/Geometry/Point.h"
-#include "Render/Shader/Shader.h"
+#include "Render/Interface/OpenGL/Shader.h"
 #include "Render/Camera/Camera.h"
 #include "Render/Light/Light.h"
-#include "Render/UniformProperty.h"
-#include "glad/glad.h"
+#include "Render/Interface/OpenGL/UniformProperty.h"
+#include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
-Renderer::Renderer()
+GLRenderer::GLRenderer()
 {
-	_uniformProperties = std::make_shared<UniformProperties>();
+	_uniformProperties = std::make_shared<GLUniformProperties>();
 	_uniformProperties->setUp();
 }
 
-Renderer::~Renderer()
+GLRenderer::~GLRenderer()
 {
 	_uniformProperties->clear();
 }
 
-Renderer::Renderer(const Renderer& renderer)
+GLRenderer::GLRenderer(const GLRenderer& renderer)
 {
 
 }
 
-std::shared_ptr<GeometryRenderBuffer> Renderer::setUpMeshGeometryRenderBuffer(Mesh* mesh)
+std::shared_ptr<GLGeometryRenderBuffer> GLRenderer::setUpMeshGeometryRenderBuffer(Mesh* mesh)
 {
-	std::shared_ptr<GeometryRenderBuffer> buffer(new GeometryRenderBuffer);
+	std::shared_ptr<GLGeometryRenderBuffer> buffer(new GLGeometryRenderBuffer);
 	buffer->VAO = std::make_shared<unsigned int>();
 	buffer->VBO = std::make_shared<unsigned int>();
 	buffer->EBO = std::make_shared<unsigned int>();
@@ -74,9 +74,9 @@ std::shared_ptr<GeometryRenderBuffer> Renderer::setUpMeshGeometryRenderBuffer(Me
 	glBindVertexArray(0);
 	return buffer;
 }
-std::shared_ptr<GeometryRenderBuffer> Renderer::setUpLineGeometryRenderBuffer(Line* line)
+std::shared_ptr<GLGeometryRenderBuffer> GLRenderer::setUpLineGeometryRenderBuffer(Line* line)
 {
-	std::shared_ptr<GeometryRenderBuffer> buffer(new GeometryRenderBuffer);
+	std::shared_ptr<GLGeometryRenderBuffer> buffer(new GLGeometryRenderBuffer);
 	buffer->VAO = std::make_shared<unsigned int>();
 	buffer->VBO = std::make_shared<unsigned int>();
 	buffer->EBO = std::make_shared<unsigned int>();
@@ -102,9 +102,9 @@ std::shared_ptr<GeometryRenderBuffer> Renderer::setUpLineGeometryRenderBuffer(Li
 	glBindVertexArray(0);
 	return buffer;
 }
-std::shared_ptr<GeometryRenderBuffer> Renderer::setUpPointGeometryRenderBuffer(Point* point)
+std::shared_ptr<GLGeometryRenderBuffer> GLRenderer::setUpPointGeometryRenderBuffer(Point* point)
 {
-	std::shared_ptr<GeometryRenderBuffer> buffer(new GeometryRenderBuffer);
+	std::shared_ptr<GLGeometryRenderBuffer> buffer(new GLGeometryRenderBuffer);
 	buffer->VAO = std::make_shared<unsigned int>();
 	buffer->VBO = std::make_shared<unsigned int>();
 	buffer->EBO = std::make_shared<unsigned int>();
@@ -132,26 +132,26 @@ std::shared_ptr<GeometryRenderBuffer> Renderer::setUpPointGeometryRenderBuffer(P
 	glBindVertexArray(0);
 	return buffer;
 }
-void Renderer::deleteGeometryRenderBuffer(GeometryRenderBuffer* buffer)
+void GLRenderer::deleteGeometryRenderBuffer(GLGeometryRenderBuffer* buffer)
 {
 	glDeleteBuffers(1, buffer->VBO.get());
 	glDeleteBuffers(1, buffer->EBO.get());
 	glDeleteVertexArrays(1, buffer->VAO.get());
 }
 
-void Renderer::drawMesh(std::shared_ptr<MeshRenderUnit> mru)
+void GLRenderer::drawMesh(std::shared_ptr<GLMeshRenderUnit> mru)
 {
 	auto rendersetting = mru->renderSet;
-	if (rendersetting.getFaceCullMode() == RenderSetting::FaceCullMode::CullFront) {
+	if (rendersetting.getFaceCullMode() == GLRenderSetting::FaceCullMode::CullFront) {
 		glCullFace(GL_FRONT);
 	}
-	if (rendersetting.getFaceCullMode() == RenderSetting::FaceCullMode::CullBack) {
+	if (rendersetting.getFaceCullMode() == GLRenderSetting::FaceCullMode::CullBack) {
 		glCullFace(GL_BACK);
 	}
-	if (rendersetting.getFaceCullMode() == RenderSetting::FaceCullMode::Off) {
+	if (rendersetting.getFaceCullMode() == GLRenderSetting::FaceCullMode::Off) {
 		glDisable(GL_CULL_FACE);
 	}
-	if (rendersetting.getWireFrameMode() == RenderSetting::WireFrameMode::On) {
+	if (rendersetting.getWireFrameMode() == GLRenderSetting::WireFrameMode::On) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	auto buffer = _meshRenderMapping.at(mru);
@@ -165,7 +165,7 @@ void Renderer::drawMesh(std::shared_ptr<MeshRenderUnit> mru)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Renderer::drawLine(std::shared_ptr<LineRenderUnit> lru)
+void GLRenderer::drawLine(std::shared_ptr<GLLineRenderUnit> lru)
 {
 	auto buffer = _lineRenderMapping.at(lru);
 	glBindVertexArray(*(buffer->VAO));
@@ -177,7 +177,7 @@ void Renderer::drawLine(std::shared_ptr<LineRenderUnit> lru)
 	glBindVertexArray(0);
 }
 
-void Renderer::drawPoint(std::shared_ptr<PointRenderUnit> pru)
+void GLRenderer::drawPoint(std::shared_ptr<GLPointRenderUnit> pru)
 {
 	auto buffer = _pointRenderMapping.at(pru);
 	glBindVertexArray(*(buffer->VAO));
@@ -189,7 +189,7 @@ void Renderer::drawPoint(std::shared_ptr<PointRenderUnit> pru)
 	glBindVertexArray(0);
 }
 
-void Renderer::setViewMatrix()
+void GLRenderer::setViewMatrix()
 {
 	if (_mainCamera != nullptr) {
 		_uniformProperties->setViewMatrix(_mainCamera->getViewMatrix());
@@ -198,7 +198,7 @@ void Renderer::setViewMatrix()
 		_uniformProperties->setViewMatrix(glm::mat4(1));
 	}
 }
-void Renderer::setProjectionMatrix()
+void GLRenderer::setProjectionMatrix()
 {
 	if (_mainCamera != nullptr) {
 		_uniformProperties->setProjectionMatrix(_mainCamera->getProjcetionMatrix());
@@ -208,7 +208,7 @@ void Renderer::setProjectionMatrix()
 	}
 }
 
-void Renderer::setCameraPosition() {
+void GLRenderer::setCameraPosition() {
 	if (_mainCamera != nullptr) {
 		_uniformProperties->setCameraPosition(_mainCamera->getCameraLocation());
 	}
@@ -217,14 +217,14 @@ void Renderer::setCameraPosition() {
 	}
 }
 
-void Renderer::updateShaderCommonAttribute()
+void GLRenderer::updateShaderCommonAttribute()
 {
 	setProjectionMatrix();
 	setViewMatrix();
 	setCameraPosition();
 }
 
-void Renderer::prepairToRender()
+void GLRenderer::prepairToRender()
 {
 	for (auto value : _meshRenderUnitsRemove) {
 		auto buffer = _meshRenderMapping.at(value);
@@ -270,37 +270,37 @@ void Renderer::prepairToRender()
 	_pointRenderUnitsAdd.clear();
 }
 
-void Renderer::addDirectionalLight(std::shared_ptr<DirectionalLight> light)
+void GLRenderer::addDirectionalLight(std::shared_ptr<DirectionalLight> light)
 {
 	_uniformProperties->addDirectionalLight(light);
 }
 
-void Renderer::addPointLight(std::shared_ptr<PointLight> light)
+void GLRenderer::addPointLight(std::shared_ptr<PointLight> light)
 {
 	_uniformProperties->addPointLight(light);
 }
 
-void Renderer::addSpotLight(std::shared_ptr<SpotLight> light)
+void GLRenderer::addSpotLight(std::shared_ptr<SpotLight> light)
 {
 	_uniformProperties->addSpotLight(light);
 }
 
-void Renderer::removeDirectionalLight(std::shared_ptr<DirectionalLight> light)
+void GLRenderer::removeDirectionalLight(std::shared_ptr<DirectionalLight> light)
 {
 	_uniformProperties->removeDirectionalLight(light);
 }
 
-void Renderer::removePointLight(std::shared_ptr<PointLight> light)
+void GLRenderer::removePointLight(std::shared_ptr<PointLight> light)
 {
 	_uniformProperties->removePointLight(light);
 }
 
-void Renderer::removeSpotLight(std::shared_ptr<SpotLight> light)
+void GLRenderer::removeSpotLight(std::shared_ptr<SpotLight> light)
 {
 	_uniformProperties->removeSpotLight(light);
 }
 
-void Renderer::render()
+void GLRenderer::render()
 {
 	if (_mainCamera) {
 		_mainCamera->updateCameraInfo();
@@ -316,11 +316,11 @@ void Renderer::render()
 		drawPoint(value.first);
 	}
 }
-void Renderer::prepairToEndRender()
+void GLRenderer::prepairToEndRender()
 {
 	//TODO(?)
 }
-void Renderer::postRender()
+void GLRenderer::postRender()
 {
 	//TODO(?)
 }

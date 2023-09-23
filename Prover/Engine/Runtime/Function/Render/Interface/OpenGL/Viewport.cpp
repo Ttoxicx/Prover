@@ -1,17 +1,17 @@
-#include "View/Viewport.h"
-#include "Render/Renderer.h"
+#include "Render/Interface/OpenGL/Viewport.h"
+#include "Render/Interface/OpenGL/Renderer.h"
 #include "Input/InputManager.h"
 #include "Render/Camera/Camera.h"
 #include <iostream>
 
-Viewport::Viewport()
+GLViewport::GLViewport()
 {
 	initViewport();
 	initInputManager();
 	initDefaultConfig();
 }
 
-Viewport::Viewport(int width, int height)
+GLViewport::GLViewport(int width, int height)
 { 
 	_windowWidth = width; 
 	_windowHeight = height; 
@@ -20,20 +20,20 @@ Viewport::Viewport(int width, int height)
 	initDefaultConfig();
 }
 
-std::shared_ptr<Viewport> Viewport::getInstance()
+std::shared_ptr<GLViewport> GLViewport::getInstance()
 {
 	if (_viewport == nullptr) {
-		_viewport = std::make_shared<Viewport>();
+		_viewport = std::make_shared<GLViewport>();
 	}
 	return _viewport;
 }
 
 void framebuffer_windowsize_callback(GLFWwindow* window, int width, int height) 
 {
-	glViewport(0, 0, width, height);
+	GLViewport::getInstance()->setViewportSize(width, height);
 }
 
-void Viewport::initViewport()
+void GLViewport::initViewport()
 {
 	//初始化GLFW
 	glfwInit();
@@ -59,7 +59,7 @@ void Viewport::initViewport()
 	glfwSetFramebufferSizeCallback(_window, framebuffer_windowsize_callback);
 }
 
-void Viewport::setRenderer(std::shared_ptr<Renderer> renderer)
+void GLViewport::setRenderer(std::shared_ptr<GLRenderer> renderer)
 {
 	_renderer = renderer;
 	if (renderer->getMainCamera() == nullptr) {
@@ -67,17 +67,18 @@ void Viewport::setRenderer(std::shared_ptr<Renderer> renderer)
 	}
 }
 
-void Viewport::setViewportSize(int width, int height) {
+void GLViewport::setViewportSize(int width, int height) {
 	_windowHeight = height;
 	_windowWidth = width;
 	glViewport(0, 0, _windowWidth, _windowHeight);
 	auto camera = _renderer->getMainCamera();
 	if (camera) {
 		camera->setCameraAaspectRatio(float(width) / float(height));
+		camera->setCameraPixelMapSize(width, height);
 	}
 }
 
-void Viewport::initInputManager()
+void GLViewport::initInputManager()
 {
 	InputManager::getInstance();
 	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -85,11 +86,12 @@ void Viewport::initInputManager()
 	glfwSetScrollCallback(_window, &InputManager::handleMouseSrollCallBack);
 }
 
-void Viewport::initDefaultConfig()
+void GLViewport::initDefaultConfig()
 {
 	_defaultCamera = std::make_shared<Camera>();
 	//添加默认相机控制
 	auto cameraXY = [=](double xpos, double ypos) {
+		if (glfwGetInputMode(_window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL) return;
 		if (_renderer->getMainCamera() != _defaultCamera) return;
 		float speed = _defaultCamera->getCameraRotateSpeed();
 		if (_isFisrtMove) {
@@ -163,6 +165,18 @@ void Viewport::initDefaultConfig()
 			glfwSetWindowShouldClose(_window, true);
 		}
 	};
+	//按Alt展示鼠标
+	auto ShowCursor = [=]() {
+		if (glfwGetInputMode(_window, GLFW_CURSOR) != GLFW_CURSOR_NORMAL) {
+			glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+	};
+	//松开Alt隐藏鼠标
+	auto HideCursor = [=]() {
+		if (glfwGetInputMode(_window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED) {
+			glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+	};
 	auto input = InputManager::getInstance();
 	input->addMouseXYCallBack(cameraXY);
 	input->addMouseSrollCallBack(cameraFOV);
@@ -172,10 +186,12 @@ void Viewport::initDefaultConfig()
 	input->addKeyMapping(InputKey::A, KeyState::PRESS, CameraMoveLeft);
 	input->addKeyMapping(InputKey::Q, KeyState::PRESS, CameraMoveDown);
 	input->addKeyMapping(InputKey::E, KeyState::PRESS, CameraMoveUp);
+	input->addKeyMapping(InputKey::LEFT_ALT, KeyState::PRESS, ShowCursor);
+	input->addKeyMapping(InputKey::LEFT_ALT, KeyState::RELEASE, HideCursor);
 	input->addKeyMapping(InputKey::ESCAPE, KeyState::PRESS, Exit);
 }
 
-void Viewport::exec() {
+void GLViewport::exec() {
 	_startTime = glfwGetTime();
 	while (!glfwWindowShouldClose(_window)) {
 		glfwPollEvents();
@@ -194,5 +210,5 @@ void Viewport::exec() {
 	glfwTerminate();
 }
 
-std::shared_ptr<Viewport> Viewport::_viewport = nullptr;
-float Viewport::deltaTime = 0.f;
+std::shared_ptr<GLViewport> GLViewport::_viewport = nullptr;
+float GLViewport::deltaTime = 0.f;

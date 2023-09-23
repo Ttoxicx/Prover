@@ -14,7 +14,7 @@ class DirectionalLight;
 class PointLight;
 class SpotLight;
 
-class UniformProperties {
+class GLUniformProperties {
 public:
 	void setUp();
 	void clear();

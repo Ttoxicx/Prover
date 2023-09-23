@@ -1,10 +1,10 @@
-#include "Render/UniformProperty.h"
+#include "Render/Interface/OpenGL/UniformProperty.h"
 #include "Render/Light/Light.h"
 #include "glad/glad.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-void UniformProperties::setUp()
+void GLUniformProperties::setUp()
 {
 	/*GLint maxUniformBlockSize;
 	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformBlockSize);
@@ -18,7 +18,7 @@ void UniformProperties::setUp()
 }
 
 //配置通用属性(视口矩阵，投影矩阵，相机位置)
-void UniformProperties::setUpCommonProperties()
+void GLUniformProperties::setUpCommonProperties()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, _UBOs[0]);
 	glBufferData(
@@ -34,7 +34,7 @@ void UniformProperties::setUpCommonProperties()
 }
 
 //配置静态光
-void UniformProperties::setUpDirectionalLightBuffer()
+void GLUniformProperties::setUpDirectionalLightBuffer()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, _UBOs[1]);
 	glBufferData(
@@ -63,7 +63,7 @@ void UniformProperties::setUpDirectionalLightBuffer()
 }
 
 //配置点光
-void UniformProperties::setUpPointLightBuffer()
+void GLUniformProperties::setUpPointLightBuffer()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, _UBOs[2]);
 	glBufferData(
@@ -79,7 +79,7 @@ void UniformProperties::setUpPointLightBuffer()
 }
 
 //配置锥光
-void UniformProperties::setUpSpotLightBuffer()
+void GLUniformProperties::setUpSpotLightBuffer()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, _UBOs[3]);
 	glBufferData(
@@ -94,13 +94,13 @@ void UniformProperties::setUpSpotLightBuffer()
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void UniformProperties::clear()
+void GLUniformProperties::clear()
 {
 	glDeleteBuffers(4, _UBOs);
 }
 
 //设置投影矩阵
-void UniformProperties::setProjectionMatrix(const glm::mat4& projectionMatrix)
+void GLUniformProperties::setProjectionMatrix(const glm::mat4& projectionMatrix)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, _UBOs[0]);
 	glBufferSubData(
@@ -112,7 +112,7 @@ void UniformProperties::setProjectionMatrix(const glm::mat4& projectionMatrix)
 }
 
 //设置视口矩阵
-void UniformProperties::setViewMatrix(const glm::mat4& viewMatrix)
+void GLUniformProperties::setViewMatrix(const glm::mat4& viewMatrix)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, _UBOs[0]);
 	glBufferSubData(
@@ -124,7 +124,7 @@ void UniformProperties::setViewMatrix(const glm::mat4& viewMatrix)
 }
 
 //设置相机位置
-void UniformProperties::setCameraPosition(const glm::vec3& cameraPos)
+void GLUniformProperties::setCameraPosition(const glm::vec3& cameraPos)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, _UBOs[0]);
 	glBufferSubData(
@@ -135,7 +135,7 @@ void UniformProperties::setCameraPosition(const glm::vec3& cameraPos)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void UniformProperties::addDirectionalLight(std::shared_ptr<DirectionalLight> light)
+void GLUniformProperties::addDirectionalLight(std::shared_ptr<DirectionalLight> light)
 {
 	if (_directionalLights.size() >= MAXDIRECTIONALLIGHTCOUNT) {
 		return;
@@ -144,7 +144,7 @@ void UniformProperties::addDirectionalLight(std::shared_ptr<DirectionalLight> li
 	updateDirectionaLightBufferData();
 }
 
-void UniformProperties::addPointLight(std::shared_ptr<PointLight> light)
+void GLUniformProperties::addPointLight(std::shared_ptr<PointLight> light)
 {
 	if (_pointLights.size() >= MAXPOINTLIGHTCOUNT) {
 		return;
@@ -153,7 +153,7 @@ void UniformProperties::addPointLight(std::shared_ptr<PointLight> light)
 	updatePointLightBufferData();
 }
 
-void UniformProperties::addSpotLight(std::shared_ptr<SpotLight> light)
+void GLUniformProperties::addSpotLight(std::shared_ptr<SpotLight> light)
 {
 	if (_pointLights.size() >= MAXSPOTLIGHTCOUNT) {
 		return;
@@ -162,7 +162,7 @@ void UniformProperties::addSpotLight(std::shared_ptr<SpotLight> light)
 	updateSpotLightBufferData();
 }
 
-void UniformProperties::removeDirectionalLight(std::shared_ptr<DirectionalLight> light)
+void GLUniformProperties::removeDirectionalLight(std::shared_ptr<DirectionalLight> light)
 {
 	auto result = _directionalLightsIndicesMap.find(light);
 	if (result != _directionalLightsIndicesMap.end()) {
@@ -172,7 +172,7 @@ void UniformProperties::removeDirectionalLight(std::shared_ptr<DirectionalLight>
 	updateDirectionaLightBufferData();
 }
 
-void UniformProperties::removePointLight(std::shared_ptr<PointLight> light)
+void GLUniformProperties::removePointLight(std::shared_ptr<PointLight> light)
 {
 	auto result = _pointLightsIndicesMap.find(light);
 	if (result != _pointLightsIndicesMap.end()) {
@@ -182,7 +182,7 @@ void UniformProperties::removePointLight(std::shared_ptr<PointLight> light)
 	updatePointLightBufferData();
 }
 
-void UniformProperties::removeSpotLight(std::shared_ptr<SpotLight> light)
+void GLUniformProperties::removeSpotLight(std::shared_ptr<SpotLight> light)
 {
 	auto result = _spotLightsIndicesMap.find(light);
 	if (result != _spotLightsIndicesMap.end()) {
@@ -192,28 +192,28 @@ void UniformProperties::removeSpotLight(std::shared_ptr<SpotLight> light)
 	updateSpotLightBufferData();
 }
 
-void UniformProperties::clearDirectionalLight()
+void GLUniformProperties::clearDirectionalLight()
 {
 	_directionalLights.clear();
 	_directionalLightsIndicesMap.clear();
 	updateDirectionaLightBufferData();
 }
 
-void UniformProperties::clearPointLight()
+void GLUniformProperties::clearPointLight()
 {
 	_pointLights.clear();
 	_pointLightsIndicesMap.clear();
 	updatePointLightBufferData();
 }
 
-void UniformProperties::clearSpotLight()
+void GLUniformProperties::clearSpotLight()
 {
 	_spotLights.clear();
 	_spotLightsIndicesMap.clear();
 	updateSpotLightBufferData();
 }
 
-void UniformProperties::updateDirectionaLightBufferData()
+void GLUniformProperties::updateDirectionaLightBufferData()
 {
 	unsigned int lightCount = _directionalLights.size();
 	unsigned int lightSize = sizeof(DirectionalLight);
@@ -235,7 +235,7 @@ void UniformProperties::updateDirectionaLightBufferData()
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void UniformProperties::updatePointLightBufferData()
+void GLUniformProperties::updatePointLightBufferData()
 {
 	unsigned int lightCount = _pointLights.size();
 	unsigned int lightSize = sizeof(PointLight);
@@ -257,7 +257,7 @@ void UniformProperties::updatePointLightBufferData()
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void UniformProperties::updateSpotLightBufferData()
+void GLUniformProperties::updateSpotLightBufferData()
 {
 	unsigned int lightCount = _spotLights.size();
 	unsigned int lightSize = sizeof(SpotLight);
@@ -279,7 +279,7 @@ void UniformProperties::updateSpotLightBufferData()
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void UniformProperties::updateSingleDirectionalLightBufferData(std::shared_ptr<DirectionalLight> light)
+void GLUniformProperties::updateSingleDirectionalLightBufferData(std::shared_ptr<DirectionalLight> light)
 {
 	auto result = _directionalLightsIndicesMap.find(light);
 	if (result != _directionalLightsIndicesMap.end()) {
@@ -295,7 +295,7 @@ void UniformProperties::updateSingleDirectionalLightBufferData(std::shared_ptr<D
 	}
 }
 
-void UniformProperties::updateSinglePointLightBufferData(std::shared_ptr<PointLight> light)
+void GLUniformProperties::updateSinglePointLightBufferData(std::shared_ptr<PointLight> light)
 {
 	auto result = _pointLightsIndicesMap.find(light);
 	if (result != _pointLightsIndicesMap.end()) {
@@ -311,7 +311,7 @@ void UniformProperties::updateSinglePointLightBufferData(std::shared_ptr<PointLi
 	}
 }
 
-void UniformProperties::updateSingleSpotLightBufferData(std::shared_ptr<SpotLight> light)
+void GLUniformProperties::updateSingleSpotLightBufferData(std::shared_ptr<SpotLight> light)
 {
 	auto result = _spotLightsIndicesMap.find(light);
 	if (result != _spotLightsIndicesMap.end()) {

@@ -1,29 +1,29 @@
-#include "Render/Shader/Shader.h"
+#include "Render/Interface/OpenGL/Shader.h"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <sstream>
 #include <fstream>
 
-Shader::Shader(const char* vscPath) {
+GLShader::GLShader(const char* vscPath) {
 	loadandCompileSubShader(vscPath, SHADER_TYPE::VERT);
 	createShader(PROGRAM_TYPE::VERT_ONLY);
 }
 
-Shader::Shader(const char* vscPath, const char* fscPath) {
+GLShader::GLShader(const char* vscPath, const char* fscPath) {
 	loadandCompileSubShader(vscPath, SHADER_TYPE::VERT);
 	loadandCompileSubShader(fscPath, SHADER_TYPE::FRAG);
 	createShader(PROGRAM_TYPE::VERT_FRAG);
 }
 
-Shader::Shader(const char* vscPath, const char* fscPath, const char* gscPath) {
+GLShader::GLShader(const char* vscPath, const char* fscPath, const char* gscPath) {
 	loadandCompileSubShader(vscPath, SHADER_TYPE::VERT);
 	loadandCompileSubShader(fscPath, SHADER_TYPE::FRAG);
 	loadandCompileSubShader(gscPath, SHADER_TYPE::GEOM);
 	createShader(PROGRAM_TYPE::VERT_GEOM_FRAG);
 }
 
-void Shader::loadandCompileSubShader(const char* path, SHADER_TYPE type)
+void GLShader::loadandCompileSubShader(const char* path, SHADER_TYPE type)
 {
 	std::string shaderCode;
 	std::ifstream shaderFileStream;
@@ -65,7 +65,7 @@ void Shader::loadandCompileSubShader(const char* path, SHADER_TYPE type)
 	return;
 }
 
-void Shader::createShader(PROGRAM_TYPE type) {
+void GLShader::createShader(PROGRAM_TYPE type) {
 	_shaderProgramId = glCreateProgram();
 	switch (type)
 	{
@@ -94,7 +94,7 @@ void Shader::createShader(PROGRAM_TYPE type) {
 	glDeleteShader(_fragShaderId);
 }
 
-void Shader::getShaderCondition() {
+void GLShader::getShaderCondition() {
 	if (!_buildSuccess) {
 		std::cout << "Shader: " << _shaderProgramId << "Create Failed\n" << "DETAIL:" << std::endl;
 		char infolog[512];
@@ -122,7 +122,7 @@ void Shader::getShaderCondition() {
 	std::cout << "Shader: " << _shaderProgramId << " Create Success" << std::endl;
 }
 
-void Shader::setParameters1b(const char* property, bool val)
+void GLShader::setParameters1b(const char* property, bool val)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -135,7 +135,7 @@ void Shader::setParameters1b(const char* property, bool val)
 	glUseProgram(0);
 }
 
-void Shader::setParameters2b(const char* property, const glm::bvec2& vec2)
+void GLShader::setParameters2b(const char* property, const glm::bvec2& vec2)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -148,7 +148,7 @@ void Shader::setParameters2b(const char* property, const glm::bvec2& vec2)
 	glUseProgram(0);
 }
 
-void Shader::setParameters3b(const char* property, const glm::bvec3& vec3)
+void GLShader::setParameters3b(const char* property, const glm::bvec3& vec3)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -161,7 +161,7 @@ void Shader::setParameters3b(const char* property, const glm::bvec3& vec3)
 	glUseProgram(0);
 }
 
-void Shader::setParameters4b(const char* property, const glm::bvec4& vec4)
+void GLShader::setParameters4b(const char* property, const glm::bvec4& vec4)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -174,7 +174,7 @@ void Shader::setParameters4b(const char* property, const glm::bvec4& vec4)
 	glUseProgram(0);
 }
 
-void Shader::setParameters1i(const char* property, int val)
+void GLShader::setParameters1i(const char* property, int val)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -187,7 +187,7 @@ void Shader::setParameters1i(const char* property, int val)
 	glUseProgram(0);
 }
 
-void Shader::setParameters2i(const char* property, const glm::ivec2& vec2)
+void GLShader::setParameters2i(const char* property, const glm::ivec2& vec2)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -200,7 +200,7 @@ void Shader::setParameters2i(const char* property, const glm::ivec2& vec2)
 	glUseProgram(0);
 }
 
-void Shader::setParameters3i(const char* property, const glm::ivec3& vec3)
+void GLShader::setParameters3i(const char* property, const glm::ivec3& vec3)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -213,7 +213,7 @@ void Shader::setParameters3i(const char* property, const glm::ivec3& vec3)
 	glUseProgram(0);
 }
 
-void Shader::setParameters4i(const char* property, const glm::ivec4& vec4)
+void GLShader::setParameters4i(const char* property, const glm::ivec4& vec4)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -226,7 +226,7 @@ void Shader::setParameters4i(const char* property, const glm::ivec4& vec4)
 	glUseProgram(0);
 }
 
-void Shader::setParameters1ui(const char* property, unsigned int val)
+void GLShader::setParameters1ui(const char* property, unsigned int val)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -239,7 +239,7 @@ void Shader::setParameters1ui(const char* property, unsigned int val)
 	glUseProgram(0);
 }
 
-void Shader::setParameters2ui(const char* property, const glm::uvec2& vec2)
+void GLShader::setParameters2ui(const char* property, const glm::uvec2& vec2)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -252,7 +252,7 @@ void Shader::setParameters2ui(const char* property, const glm::uvec2& vec2)
 	glUseProgram(0);
 }
 
-void Shader::setParameters3ui(const char* property, const glm::uvec3& vec3)
+void GLShader::setParameters3ui(const char* property, const glm::uvec3& vec3)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -265,7 +265,7 @@ void Shader::setParameters3ui(const char* property, const glm::uvec3& vec3)
 	glUseProgram(0);
 }
 
-void Shader::setParameters4ui(const char* property, const glm::uvec4& vec4)
+void GLShader::setParameters4ui(const char* property, const glm::uvec4& vec4)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -278,7 +278,7 @@ void Shader::setParameters4ui(const char* property, const glm::uvec4& vec4)
 	glUseProgram(0);
 }
 
-void Shader::setParameters1f(const char* property, float val)
+void GLShader::setParameters1f(const char* property, float val)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -291,7 +291,7 @@ void Shader::setParameters1f(const char* property, float val)
 	glUseProgram(0);
 }
 
-void Shader::setParameters2f(const char* property, const glm::vec2& vec2)
+void GLShader::setParameters2f(const char* property, const glm::vec2& vec2)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -304,7 +304,7 @@ void Shader::setParameters2f(const char* property, const glm::vec2& vec2)
 	glUseProgram(0);
 }
 
-void Shader::setParameters3f(const char* property, const glm::vec3& vec3)
+void GLShader::setParameters3f(const char* property, const glm::vec3& vec3)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -317,7 +317,7 @@ void Shader::setParameters3f(const char* property, const glm::vec3& vec3)
 	glUseProgram(0);
 }
 
-void Shader::setParameters4f(const char* property, const glm::vec4& vec4)
+void GLShader::setParameters4f(const char* property, const glm::vec4& vec4)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -330,7 +330,7 @@ void Shader::setParameters4f(const char* property, const glm::vec4& vec4)
 	glUseProgram(0);
 }
 
-void Shader::setParameters1d(const char* property, double val)
+void GLShader::setParameters1d(const char* property, double val)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -343,7 +343,7 @@ void Shader::setParameters1d(const char* property, double val)
 	glUseProgram(0);
 }
 
-void Shader::setParameters2d(const char* property, const glm::dvec2& vec2)
+void GLShader::setParameters2d(const char* property, const glm::dvec2& vec2)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -356,7 +356,7 @@ void Shader::setParameters2d(const char* property, const glm::dvec2& vec2)
 	glUseProgram(0);
 }
 
-void Shader::setParameters3d(const char* property, const glm::dvec3& vec3)
+void GLShader::setParameters3d(const char* property, const glm::dvec3& vec3)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -369,7 +369,7 @@ void Shader::setParameters3d(const char* property, const glm::dvec3& vec3)
 	glUseProgram(0);
 }
 
-void Shader::setParameters4d(const char* property, const glm::dvec4& vec4)
+void GLShader::setParameters4d(const char* property, const glm::dvec4& vec4)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -382,7 +382,7 @@ void Shader::setParameters4d(const char* property, const glm::dvec4& vec4)
 	glUseProgram(0);
 }
 
-void Shader::setParametersMat2f(const char* property, const glm::mat2& mat2)
+void GLShader::setParametersMat2f(const char* property, const glm::mat2& mat2)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -395,7 +395,7 @@ void Shader::setParametersMat2f(const char* property, const glm::mat2& mat2)
 	glUseProgram(0);
 }
 
-void Shader::setParametersMat3f(const char* property, const glm::mat3& mat3)
+void GLShader::setParametersMat3f(const char* property, const glm::mat3& mat3)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -408,7 +408,7 @@ void Shader::setParametersMat3f(const char* property, const glm::mat3& mat3)
 	glUseProgram(0);
 }
 
-void Shader::setParametersMat4f(const char* property, const glm::mat4& mat4)
+void GLShader::setParametersMat4f(const char* property, const glm::mat4& mat4)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -421,7 +421,7 @@ void Shader::setParametersMat4f(const char* property, const glm::mat4& mat4)
 	glUseProgram(0);
 }
 
-void Shader::setParametersMat2d(const char* property, const glm::dmat2& mat2)
+void GLShader::setParametersMat2d(const char* property, const glm::dmat2& mat2)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -434,7 +434,7 @@ void Shader::setParametersMat2d(const char* property, const glm::dmat2& mat2)
 	glUseProgram(0);
 }
 
-void Shader::setParametersMat3d(const char* property, const glm::dmat3& mat3)
+void GLShader::setParametersMat3d(const char* property, const glm::dmat3& mat3)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);
@@ -447,7 +447,7 @@ void Shader::setParametersMat3d(const char* property, const glm::dmat3& mat3)
 	glUseProgram(0);
 }
 
-void Shader::setParametersMat4d(const char* property, const glm::dmat4& mat4)
+void GLShader::setParametersMat4d(const char* property, const glm::dmat4& mat4)
 {
 	glUseProgram(_shaderProgramId);
 	int loc = glGetUniformLocation(_shaderProgramId, property);

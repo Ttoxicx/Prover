@@ -1,11 +1,11 @@
 #ifndef _MATERIAL_BASE_H_
 #define _MATERIAL_BASE_H_
 
-#include "Render/Shader/Shader.h"
+#include "Render/Interface/OpenGL/Shader.h"
 #include <memory>
 
-class MaterialBase {
+class GLMaterialBase {
 protected:
-	std::shared_ptr<Shader> shader;
+	std::shared_ptr<GLShader> shader;
 };
 #endif // !_MATERIAL_BASE_H_

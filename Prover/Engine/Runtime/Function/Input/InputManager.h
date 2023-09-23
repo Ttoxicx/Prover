@@ -174,7 +174,7 @@ class InputManager {
 		void  removeMouseXYCallBack(std::function<void(double, double)> callback);
 		void  removeMouseSrollCallBack(std::function<void(double, double)> callback);
 	private:
-		friend class Viewport;
+		friend class GLViewport;
 		static void	 handleKeyInput(GLFWwindow* window);
 		static void  handleMouseXYCallBack(GLFWwindow* window, double x, double y);
 		static void  handleMouseSrollCallBack(GLFWwindow* window, double xval, double yval);
