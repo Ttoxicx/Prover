@@ -33,7 +33,7 @@ void GLUniformProperties::setUpCommonProperties()
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-//配置静态光
+//配置平行光
 void GLUniformProperties::setUpDirectionalLightBuffer()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, _UBOs[1]);

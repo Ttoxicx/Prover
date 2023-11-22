@@ -28,6 +28,7 @@ list(APPEND IncludeDir "${PROJECT_SOURCE_DIR}/Prover/Engine/ThirdDependencies/gl
 list(APPEND IncludeDir "${PROJECT_SOURCE_DIR}/Prover/Engine/ThirdDependencies/glad/include")
 list(APPEND IncludeDir "${PROJECT_SOURCE_DIR}/Prover/Engine/ThirdDependencies/assimp/include")
 list(APPEND IncludeDir "${PROJECT_SOURCE_DIR}/Prover/Engine/ThirdDependencies/glm/include")
+list(APPEND IncludeDir "${PROJECT_SOURCE_DIR}/Prover/Engine/ThirdDependencies/stbi/include")
 list(APPEND IncludeDir "${PROJECT_SOURCE_DIR}/Prover/Editor/Excutable")
 list(APPEND IncludeDir "${PROJECT_SOURCE_DIR}/Prover/Engine/Runtime/Core")
 list(APPEND IncludeDir "${PROJECT_SOURCE_DIR}/Prover/Engine/Runtime/Function")

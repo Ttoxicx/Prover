@@ -78,7 +78,8 @@ class GLRenderer {
 public:
 	GLRenderer();
 	~GLRenderer();
-	GLRenderer(const GLRenderer& renderer);
+public:
+	static std::shared_ptr<GLRenderer> getInstance();
 public:
 	inline void setMainCamera(std::shared_ptr<Camera> camera) { _mainCamera = camera; };
 	inline std::shared_ptr<Camera> getMainCamera() { return _mainCamera; }
@@ -143,6 +144,8 @@ private:
 	//渲染视口相关
 	std::shared_ptr<Camera> _mainCamera;
 	std::shared_ptr<GLUniformProperties> _uniformProperties;
+private:
+	static std::shared_ptr<GLRenderer> _glRenderer;
 };
 
 #endif // !1

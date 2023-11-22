@@ -6,7 +6,7 @@
 
 class Component {
 public:
-	virtual void tickComponent() {};
+	virtual void tickComponent(double deltaTime) {};
 public:
 	void attachToObject(std::shared_ptr<Object> object) { _object = object; }
 	void distachFromObject(std::shared_ptr<Object> object) { _object.reset(); }

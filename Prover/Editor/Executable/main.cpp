@@ -89,8 +89,7 @@ std::ostream& operator<<(std::ostream& o, const glm::vec3& point) {
 	return o;
 }
 
-int main()
-{
+void mathTest() {
 	AABB aabb(glm::vec3(-5.f), glm::vec3(5.f));
 	Plane plane(glm::vec3(0.f, 0.f, 1.f), glm::vec3(-10.f));
 	Triangle triangle(glm::vec3(-100.f, -100.f, -5.f), glm::vec3(100.f, -100.f, -5.f), glm::vec3(0.f, 100.f, -5.f));
@@ -120,10 +119,14 @@ int main()
 		std::cout << ray << std::endl;
 		std::cout << triangle << std::endl;
 	}
-	
+}
+
+int main()
+{
+	mathTest();
 
 	auto viewport = GLViewport::getInstance();
-	auto renderer = std::make_shared<GLRenderer>();
+	auto renderer = GLRenderer::getInstance();
 	/*std::shared_ptr<DirectionalLight> light = std::make_shared<DirectionalLight>();
 	light->lightColor = glm::vec4(1.f, 1.f, 1.f, 1.f);
 	light->lightDir = glm::normalize(glm::vec4(0.f, 0.f, -1.f, 0.f));
@@ -132,7 +135,6 @@ int main()
 	light->lightColor = glm::vec4(1.f, 1.f, 1.f, 1.f);
 	light->lightPos = glm::normalize(glm::vec4(10.f, 10.f, 10.f, 0.f));
 	renderer->addPointLight(light);
-	viewport->setRenderer(renderer);
 	loadTest(renderer);
 	viewport->exec();
 	return 0;

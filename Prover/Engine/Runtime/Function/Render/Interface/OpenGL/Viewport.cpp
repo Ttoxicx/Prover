@@ -7,6 +7,7 @@
 GLViewport::GLViewport()
 {
 	initViewport();
+	initRenderer();
 	initInputManager();
 	initDefaultConfig();
 }
@@ -35,36 +36,33 @@ void framebuffer_windowsize_callback(GLFWwindow* window, int width, int height)
 
 void GLViewport::initViewport()
 {
-	//初始化GLFW
+	//init GLFW
 	glfwInit();
-	//配置OpenGL版本
+	//set OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	//配置为核心模式
+	//set OpenGL mode
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	_window = glfwCreateWindow(_windowWidth, _windowHeight, "Prover", NULL, NULL);
 	if (_window == NULL) {
 		glfwTerminate();
 		throw("Create Window Failed");
 	}
-	//将当前窗口的上下文设置为当前线程的主上下文
+	//set main context
 	glfwMakeContextCurrent(_window);
-	//给GLAD传入了用来加载系统相关的OpenGL函数指针地址的函数glfwGetProcAddress
+	//load opengl function address
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		glfwTerminate();
 		throw("Failed to Initialize GLAD");
 	}
 	glViewport(0, 0, _windowWidth, _windowHeight);
-	//指定窗口大小改变时的回调函数
+	//framebuffer callback
 	glfwSetFramebufferSizeCallback(_window, framebuffer_windowsize_callback);
 }
 
-void GLViewport::setRenderer(std::shared_ptr<GLRenderer> renderer)
+void GLViewport::initRenderer()
 {
-	_renderer = renderer;
-	if (renderer->getMainCamera() == nullptr) {
-		renderer->setMainCamera(_defaultCamera);
-	}
+	_renderer = GLRenderer::getInstance();
 }
 
 void GLViewport::setViewportSize(int width, int height) {
@@ -88,12 +86,11 @@ void GLViewport::initInputManager()
 
 void GLViewport::initDefaultConfig()
 {
-	_defaultCamera = std::make_shared<Camera>();
-	//添加默认相机控制
+	//default camera control
 	auto cameraXY = [=](double xpos, double ypos) {
 		if (glfwGetInputMode(_window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL) return;
-		if (_renderer->getMainCamera() != _defaultCamera) return;
-		float speed = _defaultCamera->getCameraRotateSpeed();
+		auto camera = _renderer->getMainCamera();
+		float speed = camera->getCameraRotateSpeed();
 		if (_isFisrtMove) {
 			_mouseX = xpos;
 			_mouseY = ypos;
@@ -103,75 +100,75 @@ void GLViewport::initDefaultConfig()
 		float deltaYaw = -(_mouseX - xpos) * deltaTime * speed;
 		_mouseX = xpos;
 		_mouseY = ypos;
-		glm::vec3 rotation = _defaultCamera->getCameraRotation();
+		glm::vec3 rotation = _renderer->getMainCamera()->getCameraRotation();
 		float pitch = rotation.x;
 		float yaw = rotation.y;
 		rotation.x = glm::clamp<float>(pitch + deltaPitch, -89.f, 89.f);
 		rotation.y = yaw + deltaYaw;
-		_defaultCamera->setCameraRotation(rotation);
+		camera->setCameraRotation(rotation);
 	};
 	auto cameraFOV = [=](double xval, double yval) {
-		if (_renderer->getMainCamera() != _defaultCamera) return;
-		float speed = _defaultCamera->getCameraZoomSpeed();
-		float fov = _defaultCamera->getCameraFOV();
+		auto camera = _renderer->getMainCamera();
+		float speed = camera->getCameraZoomSpeed();
+		float fov = camera->getCameraFOV();
 		fov = glm::clamp(fov - float(yval * speed * deltaTime), 44.0f, 46.0f);
-		_defaultCamera->setCameraFOV(fov);
+		camera->setCameraFOV(fov);
 	};
 	auto CameraMoveForward = [=]() {
-		if (_renderer->getMainCamera() != _defaultCamera) return;
-		float speed = _defaultCamera->getCameraOffsetSpeed();
-		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
-		cameraloc += deltaTime * _defaultCamera->getCameraFrontVector() * speed;
-		_defaultCamera->setCameraLocation(cameraloc);
+		auto camera = _renderer->getMainCamera();
+		float speed = camera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = camera->getCameraLocation();
+		cameraloc += deltaTime * camera->getCameraFrontVector() * speed;
+		camera->setCameraLocation(cameraloc);
 	};
 	auto CameraMoveBack = [=]() {
-		if (_renderer->getMainCamera() != _defaultCamera) return;
-		float speed = _defaultCamera->getCameraOffsetSpeed();
-		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
-		cameraloc -= deltaTime * _defaultCamera->getCameraFrontVector() * speed;
-		_defaultCamera->setCameraLocation(cameraloc);
+		auto camera = _renderer->getMainCamera();
+		float speed = camera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = camera->getCameraLocation();
+		cameraloc -= deltaTime * camera->getCameraFrontVector() * speed;
+		camera->setCameraLocation(cameraloc);
 	};
 	auto CameraMoveRight = [=]() {
-		if (_renderer->getMainCamera() != _defaultCamera) return;
-		float speed = _defaultCamera->getCameraOffsetSpeed();
-		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
-		cameraloc += deltaTime * _defaultCamera->getCameraRightVector() * speed;
-		_defaultCamera->setCameraLocation(cameraloc);
+		auto camera = _renderer->getMainCamera();
+		float speed = camera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = camera->getCameraLocation();
+		cameraloc += deltaTime * camera->getCameraRightVector() * speed;
+		camera->setCameraLocation(cameraloc);
 	};
 	auto CameraMoveLeft = [=]() {
-		if (_renderer->getMainCamera() != _defaultCamera) return;
-		float speed = _defaultCamera->getCameraOffsetSpeed();
-		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
-		cameraloc -= deltaTime * _defaultCamera->getCameraRightVector() * speed;
-		_defaultCamera->setCameraLocation(cameraloc);
+		auto camera = _renderer->getMainCamera();
+		float speed = camera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = camera->getCameraLocation();
+		cameraloc -= deltaTime * camera->getCameraRightVector() * speed;
+		camera->setCameraLocation(cameraloc);
 	};
 	auto CameraMoveDown = [=]() {
-		if (_renderer->getMainCamera() != _defaultCamera) return;
-		float speed = _defaultCamera->getCameraOffsetSpeed();
-		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
-		cameraloc -= deltaTime * _defaultCamera->getCameraUpVector() * speed;
-		_defaultCamera->setCameraLocation(cameraloc);
+		auto camera = _renderer->getMainCamera();
+		float speed = camera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = camera->getCameraLocation();
+		cameraloc -= deltaTime * camera->getCameraUpVector() * speed;
+		camera->setCameraLocation(cameraloc);
 	};
 	auto CameraMoveUp = [=]() {
-		if (_renderer->getMainCamera() != _defaultCamera) return;
-		float speed = _defaultCamera->getCameraOffsetSpeed();
-		glm::vec3 cameraloc = _defaultCamera->getCameraLocation();
-		cameraloc += deltaTime * _defaultCamera->getCameraUpVector() * speed;
-		_defaultCamera->setCameraLocation(cameraloc);
+		auto camera = _renderer->getMainCamera();
+		float speed = camera->getCameraOffsetSpeed();
+		glm::vec3 cameraloc = camera->getCameraLocation();
+		cameraloc += deltaTime * camera->getCameraUpVector() * speed;
+		camera->setCameraLocation(cameraloc);
 	};
-	//按ESC退出
+	//escape
 	auto Exit = [=]() {
 		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 			glfwSetWindowShouldClose(_window, true);
 		}
 	};
-	//按Alt展示鼠标
+	//show cursor
 	auto ShowCursor = [=]() {
 		if (glfwGetInputMode(_window, GLFW_CURSOR) != GLFW_CURSOR_NORMAL) {
 			glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 	};
-	//松开Alt隐藏鼠标
+	//hide cursor
 	auto HideCursor = [=]() {
 		if (glfwGetInputMode(_window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED) {
 			glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

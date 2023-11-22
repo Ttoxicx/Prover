@@ -7,7 +7,7 @@ class CameraComponent :public Component {
 public:
 	void setCameraLag(float lagtime) {}//TODO(Ïà»úÑÓ³Ù¸ú½ø)
 public:
-	virtual void tickComponent() override;
+	virtual void tickComponent(double deltaTime) override;
 public:
 	Camera _camera;
 };

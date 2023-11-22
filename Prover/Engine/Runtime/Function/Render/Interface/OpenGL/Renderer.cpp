@@ -11,6 +11,7 @@
 
 GLRenderer::GLRenderer()
 {
+	_mainCamera = std::make_shared<Camera>();
 	_uniformProperties = std::make_shared<GLUniformProperties>();
 	_uniformProperties->setUp();
 }
@@ -20,9 +21,12 @@ GLRenderer::~GLRenderer()
 	_uniformProperties->clear();
 }
 
-GLRenderer::GLRenderer(const GLRenderer& renderer)
+std::shared_ptr<GLRenderer> GLRenderer::getInstance()
 {
-
+	if (_glRenderer == nullptr) {
+		_glRenderer = std::make_shared<GLRenderer>();
+	}
+	return _glRenderer;
 }
 
 std::shared_ptr<GLGeometryRenderBuffer> GLRenderer::setUpMeshGeometryRenderBuffer(Mesh* mesh)
@@ -324,3 +328,5 @@ void GLRenderer::postRender()
 {
 	//TODO(?)
 }
+
+std::shared_ptr<GLRenderer> GLRenderer::_glRenderer = nullptr;

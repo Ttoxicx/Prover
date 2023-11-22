@@ -1,6 +1,6 @@
 #include "Input/InputManager.h"
 
-std::map<InputKey, unsigned int> InputKeyGlfwMapping
+const std::map<InputKey, unsigned int> InputKeyGlfwMapping
 {
 	/* The unknown key */
 	std::pair<InputKey,unsigned int>(InputKey::UNKNOWN            ,GLFW_KEY_UNKNOWN),
@@ -193,7 +193,7 @@ void InputManager::handleMouseSrollCallBack(GLFWwindow* window, double xval, dou
 
 void InputManager::addKeyMapping(InputKey key, KeyState state, std::function<void()> callback)
 {
-	unsigned int glfwKey = InputKeyGlfwMapping[key];
+	unsigned int glfwKey = InputKeyGlfwMapping.at(key);
 	if (state == KeyState::PRESS) {
 		if (_keyMappingPress.find(glfwKey) != _keyMappingPress.end()) {
 			_keyMappingPress.emplace(glfwKey, std::vector<std::function<void()>>());
@@ -226,7 +226,7 @@ void InputManager::addMouseSrollCallBack(std::function<void(double, double)> cal
 
 void InputManager::removeKeyMapping(InputKey key, KeyState state, std::function<void()> callback)
 {
-	unsigned int glfwKey = InputKeyGlfwMapping[key];
+	unsigned int glfwKey = InputKeyGlfwMapping.at(key);
 	if (state == KeyState::PRESS) {
 		if (_keyMappingPress.find(glfwKey) == _keyMappingPress.end()) return;
 		auto& callbacks = _keyMappingPress[glfwKey];

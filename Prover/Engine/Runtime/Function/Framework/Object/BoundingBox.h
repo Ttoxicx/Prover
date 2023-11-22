@@ -18,13 +18,12 @@ public:
 		_aabb = boundingBox._aabb;
 	}
 
-	bool intersect(const BoundingBox& boundingBox) {
-		return _aabb.intersect(boundingBox._aabb);
+public:
+
+	const AABB& aabb() const {
+		return _aabb;
 	}
 
-	bool intersect(const glm::vec3& min, const glm::vec3& max) {
-		return _aabb.intersect(min, max);
-	}
 private:
 	AABB _aabb;
 };
