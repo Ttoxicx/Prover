@@ -2,6 +2,7 @@
 #define _SHADER_H_
 
 #include <glm/glm.hpp>
+#include <string>
 
 class GLShader {
 public:
@@ -50,7 +51,9 @@ private:
 		VERT_FRAG,
 		VERT_GEOM_FRAG
 	};
-	void loadandCompileSubShader(const char* path, SHADER_TYPE type);
+	void compileShader(const char* path, SHADER_TYPE type);
+	const std::string loadShaderSource(const char* path);
+	const std::string prepareShader(const char* path);
 	void createShader(PROGRAM_TYPE type);
 private:
 	unsigned int _shaderProgramId = 0;

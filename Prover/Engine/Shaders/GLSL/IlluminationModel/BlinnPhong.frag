@@ -1,38 +1,4 @@
-#version 460 core
-struct DirectionalLight{
-	vec3 lightColor;
-	vec3 lightDir;
-};
-struct PointLight{
-	vec3 lightColor;
-	vec3 lightPos;
-	float radius;
-	float constant;
-	float linear;
-	float quadratic;
-};
-struct SpotLight{
-	vec3 lightColor;
-	vec3 lightPos;
-	vec3 lightDir;
-	float innerCos;
-	float outerCos;
-};
-layout (std140,binding=1) uniform DirectionalLights{
-	
-	DirectionalLight directionalLight[1000];
-	uint directionalLightCount;
-};
-layout (std140,binding=2) uniform PointLights{
-	
-	PointLight pointLight[100];
-	uint pointLightCount;
-};
-layout (std140,binding=3) uniform SpotLights{
-	
-	SpotLight spotLight[100];
-	uint spotLightCount;
-};
+#include "../Common/Core.glsl"
 
 uniform vec3 ambientColor;
 uniform vec3 diffuseColor;
@@ -139,14 +105,14 @@ void main()
 	vec3 directionalResult;
 	vec3 pointLightResult;
 	vec3 spotLightResult;
-	for(uint i=0;i<directionalLightCount;++i){
-		directionalResult+=calculateDirectionalLight(directionalLight[i],normal,ambientReal,diffuseReal,specularReal);
+	for(uint i=0;i<g_DirectionalLightCount;++i){
+		directionalResult+=calculateDirectionalLight(g_DirectionalLight[i],normal,ambientReal,diffuseReal,specularReal);
 	}
-	for(uint i=0;i<pointLightCount;++i){
-		pointLightResult+=calculatePointLightColor(pointLight[i],normal,ambientReal,diffuseReal,specularReal);
+	for(uint i=0;i<g_PointLightCount;++i){
+		pointLightResult+=calculatePointLightColor(g_PointLight[i],normal,ambientReal,diffuseReal,specularReal);
 	}
-	for(uint i=0;i<spotLightCount;++i){
-		spotLightResult+=calculateSpotLight(spotLight[i],normal,ambientReal,diffuseReal,specularReal);
+	for(uint i=0;i<g_SpotLightCount;++i){
+		spotLightResult+=calculateSpotLight(g_SpotLight[i],normal,ambientReal,diffuseReal,specularReal);
 	}
 
 	//todo 处理高动态范围

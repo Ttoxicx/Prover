@@ -4,40 +4,29 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <regex>
 
 GLShader::GLShader(const char* vscPath) {
-	loadandCompileSubShader(vscPath, SHADER_TYPE::VERT);
+	compileShader(vscPath, SHADER_TYPE::VERT);
 	createShader(PROGRAM_TYPE::VERT_ONLY);
 }
 
 GLShader::GLShader(const char* vscPath, const char* fscPath) {
-	loadandCompileSubShader(vscPath, SHADER_TYPE::VERT);
-	loadandCompileSubShader(fscPath, SHADER_TYPE::FRAG);
+	compileShader(vscPath, SHADER_TYPE::VERT);
+	compileShader(fscPath, SHADER_TYPE::FRAG);
 	createShader(PROGRAM_TYPE::VERT_FRAG);
 }
 
 GLShader::GLShader(const char* vscPath, const char* fscPath, const char* gscPath) {
-	loadandCompileSubShader(vscPath, SHADER_TYPE::VERT);
-	loadandCompileSubShader(fscPath, SHADER_TYPE::FRAG);
-	loadandCompileSubShader(gscPath, SHADER_TYPE::GEOM);
+	compileShader(vscPath, SHADER_TYPE::VERT);
+	compileShader(fscPath, SHADER_TYPE::FRAG);
+	compileShader(gscPath, SHADER_TYPE::GEOM);
 	createShader(PROGRAM_TYPE::VERT_GEOM_FRAG);
 }
 
-void GLShader::loadandCompileSubShader(const char* path, SHADER_TYPE type)
+void GLShader::compileShader(const char* path, SHADER_TYPE type)
 {
-	std::string shaderCode;
-	std::ifstream shaderFileStream;
-	shaderFileStream.exceptions(std::ifstream::badbit | std::ifstream::failbit);
-	try {
-		shaderFileStream.open(path);
-		std::stringstream shaderstream;
-		shaderstream << shaderFileStream.rdbuf();
-		shaderCode = shaderstream.str();
-		shaderFileStream.close();
-	}
-	catch (std::ifstream::failure e) {
-		throw std::string("WrongPath:: ") + std::string(path).c_str();
-	}
+	const std::string shaderCode = prepareShader(path);
 	const char* sc = shaderCode.c_str();
 	unsigned int currentShaderId = 0;
 	switch (type) {
@@ -63,6 +52,49 @@ void GLShader::loadandCompileSubShader(const char* path, SHADER_TYPE type)
 		_errorId = currentShaderId;
 	}
 	return;
+}
+
+const std::string GLShader::loadShaderSource(const char* path) {
+	std::string shaderCode;
+	std::ifstream shaderFileStream;
+	shaderFileStream.exceptions(std::ifstream::badbit | std::ifstream::failbit);
+	try {
+		shaderFileStream.open(path);
+		std::stringstream shaderstream;
+		shaderstream << shaderFileStream.rdbuf();
+		shaderCode = shaderstream.str();
+		shaderFileStream.close();
+	}
+	catch (std::ifstream::failure e) {
+		throw std::string("WrongPath:: ") + std::string(path).c_str();
+	}
+	return shaderCode;
+}
+
+const std::string getDirectory(const char* path) {
+	std::string pathStr(path);
+	size_t pos = pathStr.find_last_of("/\\");
+	return (std::string::npos == pos) ? "" : pathStr.substr(0, pos);
+}
+
+const std::string GLShader::prepareShader(const char* path) {
+	std::string rawCode = loadShaderSource(path);
+	//std::cout <<"Raw Code: \n" << rawCode << std::endl;
+	std::string resultCode = rawCode;
+	std::regex includeRegex("#include\\s+\"([^\"]+)\"");
+	std::vector<std::smatch> matches;
+	for (std::sregex_iterator it = std::sregex_iterator(rawCode.begin(), rawCode.end(), includeRegex);
+		it != std::sregex_iterator(); ++it) {
+		matches.push_back(*it);
+	}
+	std::string directory = getDirectory(path);
+	for (auto it = matches.rbegin(); it != matches.rend(); ++it) {
+		std::string includePath = (*it)[1].str();
+		std::string includedSource = loadShaderSource((directory + "/" + includePath).c_str());
+		resultCode.replace(it->position(), it->length(), includedSource);
+	}
+	//std::cout << "Prepared Code: \n" << resultCode << std::endl;
+	return resultCode;
 }
 
 void GLShader::createShader(PROGRAM_TYPE type) {
