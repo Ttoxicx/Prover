@@ -28,16 +28,6 @@ void Object::clearComponent()
 {
 	_componentList.clear();
 }
-template<typename T> const std::shared_ptr<T> Object::getComponent()
-{
-	for (auto value : _componentList) {
-		std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(value);
-		if (result != nullptr) {
-			return result;
-		}
-	}
-	return nullptr;
-}
 void Object::tick(float deltatime)
 {
 	for (auto value : _componentList) {

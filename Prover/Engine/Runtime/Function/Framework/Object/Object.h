@@ -16,7 +16,16 @@ public:
 	void addComponent(std::shared_ptr<Component> component);
 	void removeComponent(std::shared_ptr<Component> component);
 	void clearComponent();
-	template<typename T> const std::shared_ptr<T> getComponent();
+	template<typename T> 
+	const std::shared_ptr<T> getComponent(){
+		for (auto value : _componentList) {
+			std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(value);
+			if (result != nullptr) {
+				return result;
+			}
+		}
+		return nullptr;
+	}
 public:
 	virtual void tick(float deltatime);
 public:
